@@ -88,9 +88,15 @@ class LoginView extends StatelessWidget {
               child: TextField(
                 controller: emailText,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
                     hintText: "Email",
-                    prefixIcon: Icon(
+                    prefixIcon: const Icon(
                       Icons.email_outlined,
                       color: Colors.grey,
                       size: 22,
@@ -104,9 +110,15 @@ class LoginView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextField(
                 controller: passwordText,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
                     hintText: "Parola",
-                    prefixIcon: Icon(
+                    prefixIcon: const Icon(
                       Icons.password,
                       color: Colors.grey,
                       size: 22,
