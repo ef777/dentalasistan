@@ -1,4 +1,4 @@
-import 'package:dental_asistanim/hastaekle.dart';
+/* import 'package:dental_asistanim/hastaekle.dart';
 import 'package:dental_asistanim/randevuekle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -45,7 +45,7 @@ class _homeState extends State<home> with TickerProviderStateMixin {
       name: 'Önder Akkaya',
       description: 'Admin',
       image: 'https://i.pravatar.cc/300',
-    );
+    );/*  */
 
     return Scaffold(
       appBar: AppBar(
@@ -222,3 +222,4 @@ class User {
     required this.image,
   });
 }
+ */

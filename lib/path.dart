@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:dental_asistanim/errorpage.dart';
 import 'package:dental_asistanim/home.dart';
+import 'package:dental_asistanim/giris.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'config.dart';
-import 'login.dart';
+import 'home_view.dart';
 
 class path extends StatelessWidget {
   const path({Key? key}) : super(key: key);
@@ -37,14 +38,14 @@ class path extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: Config.login == '0' ? '/login' : '/',
       routes: {
-        '/': (context) => home(),
+        '/': (context) => HomeView(),
         '/login': (context) => LoginScreen(),
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/':
             return MaterialPageRoute(
-              builder: (context) => home(),
+              builder: (context) => HomeView(),
             );
           case '/login':
             return MaterialPageRoute(
