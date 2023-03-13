@@ -1,10 +1,15 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'package:dental_asistanim/home_view.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:dental_asistanim/const.dart';
 import 'package:dental_asistanim/custon_button.dart';
 import 'package:dental_asistanim/randevutarih.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'config.dart';
 
 class Hastaekle extends StatefulWidget {
   @override
@@ -89,6 +94,42 @@ class _HastaekleState extends State<Hastaekle> {
   String _herhangibirtibbisorun = "";
   String _ensondishekimitedavi = "";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  hastaekle(
+    mail,
+    sifre,
+  ) async {
+    try {
+      var url = Uri.parse('https://demo.dentalasistanim.com/api/patients');
+      var response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          "email": mail,
+          "password": sifre,
+        }),
+      );
+      String responseString = response.body;
+      Map<String, dynamic> responseData = json.decode(responseString);
+      String token = responseData['token'];
+      print(token);
+      Config.token = token;
+
+      if (response.statusCode == 200) {
+        Get.snackbar('Başarılı', 'Hasta Ekleme Başarılı');
+
+        Get.to(() => HomeView(
+              name: Config.name,
+            ));
+      } else {
+        Get.snackbar('Hata', 'Kullanıcı adı veya şifre hatalı');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

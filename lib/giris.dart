@@ -59,9 +59,13 @@ class _LoginScreenState extends State<LoginScreen>
                             padding: EdgeInsets.all(10),
                             child: Carousel(
                               texts: [
-                                'Dental Asistanım sizlere profesyonel ve yenilikçi çözümler sunmaktadır.',
+                                "",
+                                "",
+                                ""
+                                /*   'Dental Asistanım sizlere profesyonel ve yenilikçi çözümler sunmaktadır.',
                                 'Dental Asistanım ile sınırsız hasta kaydı ve takibi yapabilirsiniz.',
                                 'Hastalar için muayene notları, muayene bilgilerini kaydedebilirsiniz. ',
+                               */
                               ],
                               children: [
                                 Image.asset(

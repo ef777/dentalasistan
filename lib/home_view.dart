@@ -6,11 +6,19 @@ import 'package:dental_asistanim/selectionCard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'config.dart';
 import 'hastasayfa.dart';
 
-class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+class HomeView extends StatefulWidget {
+  late String name;
 
+  HomeView({super.key, required this.name});
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -18,8 +26,17 @@ class HomeView extends StatelessWidget {
     return Scaffold(
         backgroundColor: sfColor,
         appBar: AppBar(
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.arrow_back)),
+          ],
+          automaticallyImplyLeading: false,
           elevation: 0,
           backgroundColor: Colors.transparent,
+          title: const ProfileAppbar(),
         ),
         body: Column(
           children: [
@@ -48,7 +65,6 @@ class HomeView extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        const ProfileAppbar(),
                         const Divider(
                           height: 0.2,
                           thickness: 1,
@@ -100,24 +116,30 @@ class ProfileAppbar extends StatelessWidget {
     var size = MediaQuery.of(context).size;
 
     return Row(
+      /*      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center, */
       children: [
+        SizedBox(
+          height: size.height * 0.08,
+        ),
         Column(
           children: [
-            CircleAvatar(
-              backgroundColor: Colors.blue, // Solid renk
-              backgroundImage: const AssetImage('assets/avatarImage.png'),
-              radius: 45.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: solidColor,
-                    width: 3.0, // Kenarlık kalınlığı
+            SizedBox(
+                height: size.height * 0.08,
+                child: CircleAvatar(
+                  backgroundColor: Colors.blue, // Solid renk
+                  backgroundImage: const AssetImage('assets/avatarImage.png'),
+                  radius: 45.0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: solidColor,
+                        width: 3.0, // Kenarlık kalınlığı
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-            SizedBox(height: size.height * 0.01),
+                )),
             Container(
               width: 58,
               height: 3,
@@ -134,18 +156,16 @@ class ProfileAppbar extends StatelessWidget {
         Column(
           children: [
             Text(
-              adminName,
+              Config.name,
               style: Theme.of(context)
                   .textTheme
                   .bodyText1
-                  ?.copyWith(fontWeight: FontWeight.w700),
+                  ?.copyWith(fontWeight: FontWeight.w700, color: Colors.white),
             ),
             Text(
               "Admin",
-              style: Theme.of(context)
-                  .textTheme
-                  .caption
-                  ?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(context).textTheme.caption?.copyWith(
+                  fontWeight: FontWeight.w700, color: Colors.white60),
             )
           ],
         )

@@ -1,4 +1,11 @@
 class Config {
+  static String subeid = "*";
+  static String id = "*";
+  static String name = "*";
+  static String email = "*";
+  static String phone = "*";
+  static String status = "*";
+  static String role = "*";
   static String token = '';
   static const String appTitle = '';
   static const String baseUrl = 'https://jsonplaceholder.typicode.com';
