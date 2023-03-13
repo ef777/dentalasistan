@@ -52,6 +52,7 @@ class _HastaekleState extends State<Hastaekle> {
     'Üçgen'
   ];
   String _telefonno = "";
+
   String _eposta = "";
   String _adres = "";
   String _ulke = "";
@@ -95,36 +96,33 @@ class _HastaekleState extends State<Hastaekle> {
   String _ensondishekimitedavi = "";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   hastaekle(
-    mail,
-    sifre,
+    String ad,
+    String numara,
+    String uyari,
+    String doctorid,
   ) async {
     try {
       var url = Uri.parse('https://demo.dentalasistanim.com/api/patients');
-      var response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode({
-          "email": mail,
-          "password": sifre,
-        }),
-      );
+      var response = await http.post(url, headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${Config.token}'
+      }, body: {
+        "name": "${ad.toString()}",
+        "phone": "${numara.toString()}",
+        "warn": "${uyari.toString()}",
+        "doctor_id": 53
+      });
       String responseString = response.body;
       Map<String, dynamic> responseData = json.decode(responseString);
-      String token = responseData['token'];
-      print(token);
-      Config.token = token;
 
       if (response.statusCode == 200) {
-        Get.snackbar('Başarılı', 'Hasta Ekleme Başarılı');
-
-        Get.to(() => HomeView(
-              name: Config.name,
-            ));
+        print("başarılı");
+        print(responseData);
+        return true;
       } else {
-        Get.snackbar('Hata', 'Kullanıcı adı veya şifre hatalı');
+        print("başarısız");
+        print(responseData);
+        return false;
       }
     } catch (e) {
       print(e);
@@ -137,6 +135,13 @@ class _HastaekleState extends State<Hastaekle> {
         backgroundColor: sfColor,
         appBar: AppBar(
           elevation: 0,
+          title: Text(
+            "Hasta Ekle",
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
+          ),
           backgroundColor: Colors.transparent,
         ),
         body: Column(
@@ -171,7 +176,7 @@ class _HastaekleState extends State<Hastaekle> {
                   key: _formKey,
                   child: ListView(
                     children: <Widget>[
-                      Padding(
+                      /* Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Align(
                           alignment: Alignment.centerLeft,
@@ -183,7 +188,7 @@ class _HastaekleState extends State<Hastaekle> {
                                 ?.copyWith(fontWeight: FontWeight.w600),
                           ),
                         ),
-                      ),
+                      ), */
                       /*   SizedBox(height: 20),
                       Text(
                         'Randevua Notu Giriniz',
@@ -214,8 +219,8 @@ class _HastaekleState extends State<Hastaekle> {
                         },
                       ), */
 
-                      const SizedBox(height: 10),
-                      TextFormField(
+                      //   const SizedBox(height: 10),
+                      /*    TextFormField(
                         maxLines: 1,
                         decoration: InputDecoration(
                           labelText: "Dosya No",
@@ -264,9 +269,15 @@ class _HastaekleState extends State<Hastaekle> {
                             _tcno = value;
                           });
                         },
-                      ),
+                      ), */
                       const SizedBox(height: 10),
                       TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Lütfen ad ve soyad girin';
+                          }
+                          return null;
+                        },
                         maxLines: 1,
                         decoration: InputDecoration(
                           focusedBorder: OutlineInputBorder(
@@ -290,8 +301,8 @@ class _HastaekleState extends State<Hastaekle> {
                           });
                         },
                       ),
-                      SizedBox(height: 10),
-                      TextFormField(
+/*                       SizedBox(height: 10),
+ */ /*  TextFormField(
                         maxLines: 1,
                         decoration: InputDecoration(
                           focusedBorder: OutlineInputBorder(
@@ -315,8 +326,8 @@ class _HastaekleState extends State<Hastaekle> {
                           });
                         },
                       ),
-                      const SizedBox(height: 10),
-                      TextFormField(
+                      const SizedBox(height: 10), */
+                      /*   TextFormField(
                         maxLines: 1,
                         decoration: InputDecoration(
                           focusedBorder: OutlineInputBorder(
@@ -401,8 +412,8 @@ class _HastaekleState extends State<Hastaekle> {
                             }
                           });
                         },
-                      ),
-                      const SizedBox(height: 10),
+                      ), */
+                      /*  const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         value: _kangrubu.isEmpty ? null : _kangrubu,
                         items: _kangrubuliste.map((String value) {
@@ -437,8 +448,8 @@ class _HastaekleState extends State<Hastaekle> {
                           });
                         },
                       ),
-                      SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
+                      SizedBox(height: 10), */
+                      /*    DropdownButtonFormField<String>(
                         value: _yuzsekli.isEmpty ? null : _yuzsekli,
                         items: _yuzsekliliste.map((String value) {
                           return new DropdownMenuItem<String>(
@@ -471,16 +482,22 @@ class _HastaekleState extends State<Hastaekle> {
                             }
                           });
                         },
-                      ),
+                      ), */
                       const SizedBox(height: 10),
                       TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Lütfen Numara Giriniz';
+                          }
+                          return null;
+                        },
                         maxLines: 1,
                         decoration: InputDecoration(
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: solidColor),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          labelText: "Telefon Numarası",
+                          labelText: "Numara",
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
@@ -493,11 +510,11 @@ class _HastaekleState extends State<Hastaekle> {
                         ),
                         onChanged: (value) {
                           setState(() {
-                            _telefonno = value;
+                            _telefonno = value.toString();
                           });
                         },
                       ),
-                      const SizedBox(height: 10),
+                      /*  const SizedBox(height: 10),
                       TextFormField(
                         maxLines: 1,
                         decoration: InputDecoration(
@@ -547,8 +564,8 @@ class _HastaekleState extends State<Hastaekle> {
                           });
                         },
                       ),
-                      const SizedBox(height: 10),
-                      TextFormField(
+                      const SizedBox(height: 10), */
+                      /*  TextFormField(
                         maxLines: 1,
                         decoration: InputDecoration(
                           focusedBorder: OutlineInputBorder(
@@ -671,7 +688,7 @@ class _HastaekleState extends State<Hastaekle> {
                             _referans = value;
                           });
                         },
-                      ),
+                      ), */
                       const SizedBox(height: 10),
                       TextFormField(
                         maxLines: 1,
@@ -697,7 +714,7 @@ class _HastaekleState extends State<Hastaekle> {
                           });
                         },
                       ),
-                      const SizedBox(height: 10),
+                      /*   const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         value: _hastaturu.isEmpty ? null : _hastaturu,
                         items: _hastaturuliste.map((String value) {
@@ -731,9 +748,15 @@ class _HastaekleState extends State<Hastaekle> {
                             }
                           });
                         },
-                      ),
+                      ),*/
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Lütfen Hekim Seçiniz';
+                          }
+                          return null;
+                        },
                         value: _hekim.isEmpty ? null : _hekim,
                         items: _hekimliste.map((String value) {
                           return DropdownMenuItem<String>(
@@ -767,7 +790,7 @@ class _HastaekleState extends State<Hastaekle> {
                           });
                         },
                       ),
-                      const SizedBox(height: 10),
+                      /*  const SizedBox(height: 10),
                       TextFormField(
                         maxLines: 1,
                         decoration: InputDecoration(
@@ -817,8 +840,8 @@ class _HastaekleState extends State<Hastaekle> {
                           });
                         },
                       ),
-                      const SizedBox(height: 10),
-                      TextFormField(
+                      const SizedBox(height: 10), */
+                      /*  TextFormField(
                         maxLines: 1,
                         decoration: InputDecoration(
                           focusedBorder: OutlineInputBorder(
@@ -1067,16 +1090,28 @@ class _HastaekleState extends State<Hastaekle> {
                             _ensondishekimitedavi = value;
                           });
                         },
-                      ),
+                      ), */
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: CustomButton(
                           height: 48,
-                          onPressed: () {
-                            Get.to(AppointmentPage());
-                            if (_formKey.currentState!.validate()) {}
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              var son = await hastaekle(
+                                  _adsoyad.toString(),
+                                  _telefonno.toString(),
+                                  _onemlinot.toString(),
+                                  _hekim.toString());
+                              if (son == true) {
+                                Get.snackbar('Başarılı', 'Hasta Eklendi');
+
+                                Get.to(AppointmentPage());
+                              } else {
+                                Get.snackbar('Başarısız', 'Hasta Eklenmedi!');
+                              }
+                            }
                           },
-                          title: "Kaydet ve Devam Et",
+                          title: "Kaydet",
                         ),
                       )
                     ],
