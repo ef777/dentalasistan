@@ -223,14 +223,14 @@ class HastaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Stack(
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 8),
             child: Container(
               padding: const EdgeInsets.all(8),
-              width: 330,
+              width: double.infinity,
               height: 130,
               decoration: BoxDecoration(
                 color: Colors.white,

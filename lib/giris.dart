@@ -1,5 +1,8 @@
+import 'package:dental_asistanim/const.dart';
+import 'package:dental_asistanim/custon_button.dart';
 import 'package:dental_asistanim/sizeconfig.dart';
 import 'package:faded_widget/faded_widget.dart';
+import 'package:fan_carousel_image_slider/fan_carousel_image_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +20,13 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   late AnimationController _animationController;
   late Animation<Color?> _animation;
+  static const List<String> sampleImages = [
+    "https://img.freepik.com/free-vector/tooth-with-aid-care-hygiene-treatment_24877-55048.jpg?w=2000",
+    "https://st4.depositphotos.com/1642684/19688/v/450/depositphotos_196889842-stock-illustration-vector-illustration-cartoon-tooth.jpg",
+    'https://img.freepik.com/premium-vector/tooth-character-brings-toothbrush-toothpaste-cartoon-illustration_451085-1530.jpg',
+    "https://www.dentistdunedin.co.nz/wp-content/uploads/2017/05/children-and-teenagers.png",
+    "https://media.istockphoto.com/id/968939256/vector/single-white-and-very-strong-muscle-healthy-tooth-strong-happy-healthy-white-tooth-character.jpg?s=612x612&w=0&k=20&c=_6-oy2pBj3f6qSicrCxEunr5i3ODb5fFkZTzHh2OO6Y=",
+  ];
 
   @override
   void initState() {
@@ -34,6 +44,52 @@ class _LoginScreenState extends State<LoginScreen>
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 100,
+            ),
+            FanCarouselImageSlider(
+              sliderHeight: SizeConfig.safeBlockVertical * 50,
+              indicatorActiveColor: solidColor,
+              imagesLink: sampleImages,
+              isAssets: false,
+              autoPlay: true,
+            ),
+            SizedBox(
+              height: SizeConfig.safeBlockVertical * 6,
+            ),
+            SizedBox(
+                child: CustomButton(
+              width: SizeConfig.safeBlockHorizontal * 80,
+              height: SizeConfig.safeBlockVertical * 6,
+              onPressed: () {
+                Get.to(const LoginView());
+              },
+            )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Demo talebi için'),
+                TextButton(
+                  onPressed: () {},
+                  child: const Text(
+                    'Tıklayınız',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 26, 184, 87),
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+    Scaffold(
       body: AnimatedBuilder(
         animation: _animationController,
         builder: (BuildContext context, Widget? child) {

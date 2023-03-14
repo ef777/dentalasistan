@@ -3,6 +3,7 @@ import 'package:dental_asistanim/const.dart';
 import 'package:dental_asistanim/hastaekle.dart';
 import 'package:dental_asistanim/randevuekle.dart';
 import 'package:dental_asistanim/selectionCard.dart';
+import 'package:dental_asistanim/yaklasan_randevu.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -70,7 +71,9 @@ class _HomeViewState extends State<HomeView> {
                           thickness: 1,
                         ),
                         SelectionCard(
-                          onPressed: () {},
+                          onPressed: () {
+                            Get.to(YaklasanRandevu());
+                          },
                           size: size,
                           selectionCardModel: selectionCardModelList[0],
                         ),
