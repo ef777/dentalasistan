@@ -86,6 +86,7 @@ class _HastaekleState extends State<Hastaekle> {
     'Evet',
     'Hayır',
   ];
+
   String _kanamauzun = "";
   List<String> _kanamauzunliste = [
     'Seçiniz',
@@ -95,11 +96,30 @@ class _HastaekleState extends State<Hastaekle> {
   String _herhangibirtibbisorun = "";
   String _ensondishekimitedavi = "";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  doktorliste() async {
+    try {
+      var url = Uri.parse(
+          'https://demo.dentalasistanim.com/api/branches/${Config.subeid}/doctors');
+      var response = await http.post(url, headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${Config.token}'
+      }, body: {});
+      String responseString = response.body;
+      Map<String, dynamic> responseData = json.decode(responseString);
+
+      if (response.statusCode == 200) {
+        print("başarılı");
+      } else {}
+    } catch (e) {
+      print("");
+    }
+  }
+
   hastaekle(
-    String ad,
-    String numara,
-    String uyari,
-    String doctorid,
+    ad,
+    numara,
+    uyari,
+    doctorid,
   ) async {
     try {
       var url = Uri.parse('https://demo.dentalasistanim.com/api/patients');
@@ -110,7 +130,7 @@ class _HastaekleState extends State<Hastaekle> {
         "name": "${ad.toString()}",
         "phone": "${numara.toString()}",
         "warn": "${uyari.toString()}",
-        "doctor_id": 53
+        "doctor_id": "53",
       });
       String responseString = response.body;
       Map<String, dynamic> responseData = json.decode(responseString);
@@ -176,100 +196,6 @@ class _HastaekleState extends State<Hastaekle> {
                   key: _formKey,
                   child: ListView(
                     children: <Widget>[
-                      /* Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Hasta Ekle",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineSmall
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ), */
-                      /*   SizedBox(height: 20),
-                      Text(
-                        'Randevua Notu Giriniz',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueGrey[800],
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      TextField(
-                        maxLines: 3,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _randevuNotu = value;
-                          });
-                        },
-                      ), */
-
-                      //   const SizedBox(height: 10),
-                      /*    TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          labelText: "Dosya No",
-                          filled: true,
-                          fillColor: Colors.white,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _dosyano = value;
-                          });
-                        },
-                      ),
-                      SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          filled: true,
-                          labelText: "T.C. Kimlik Numarası",
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _tcno = value;
-                          });
-                        },
-                      ), */
                       const SizedBox(height: 10),
                       TextFormField(
                         validator: (value) {
@@ -301,188 +227,6 @@ class _HastaekleState extends State<Hastaekle> {
                           });
                         },
                       ),
-/*                       SizedBox(height: 10),
- */ /*  TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Anne Adı",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _anneadi = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10), */
-                      /*   TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Baba Adı",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _babaadi = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        autofillHints: const [AutofillHints.birthday],
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Doğum Tarihi",
-                          hintText: 'GG/AA/YYYY',
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _dogumtarihi = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        value: _cinsiyet.isEmpty ? null : _cinsiyet,
-                        items: _cinsiyetliste.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.isEmpty ? null : value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Cinsiyet",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              _cinsiyet = value;
-                            } else {
-                              _cinsiyet = "";
-                            }
-                          });
-                        },
-                      ), */
-                      /*  const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        value: _kangrubu.isEmpty ? null : _kangrubu,
-                        items: _kangrubuliste.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.isEmpty ? null : value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          labelText: "Kan Grubu",
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              _kangrubu = value;
-                            } else {
-                              _kangrubu = "";
-                            }
-                          });
-                        },
-                      ),
-                      SizedBox(height: 10), */
-                      /*    DropdownButtonFormField<String>(
-                        value: _yuzsekli.isEmpty ? null : _yuzsekli,
-                        items: _yuzsekliliste.map((String value) {
-                          return new DropdownMenuItem<String>(
-                            value: value.isEmpty ? null : value,
-                            child: new Text(value),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Yüz Şekli",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              _yuzsekli = value;
-                            } else {
-                              _yuzsekli = "";
-                            }
-                          });
-                        },
-                      ), */
                       const SizedBox(height: 10),
                       TextFormField(
                         validator: (value) {
@@ -514,181 +258,6 @@ class _HastaekleState extends State<Hastaekle> {
                           });
                         },
                       ),
-                      /*  const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Email",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _eposta = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Adres",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _adres = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10), */
-                      /*  TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Ülke",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _ulke = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "İl",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _il = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "İlce",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _ilce = value;
-                          });
-                        },
-                      ),
-                      SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "İndirim",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _indirim = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Referans",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _referans = value;
-                          });
-                        },
-                      ), */
                       const SizedBox(height: 10),
                       TextFormField(
                         maxLines: 1,
@@ -714,41 +283,6 @@ class _HastaekleState extends State<Hastaekle> {
                           });
                         },
                       ),
-                      /*   const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        value: _hastaturu.isEmpty ? null : _hastaturu,
-                        items: _hastaturuliste.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.isEmpty ? null : value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Hasta Türü",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              _hastaturu = value;
-                            } else {
-                              _hastaturu = "";
-                            }
-                          });
-                        },
-                      ),*/
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         validator: (value) {
@@ -790,307 +324,6 @@ class _HastaekleState extends State<Hastaekle> {
                           });
                         },
                       ),
-                      /*  const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: 'Herhangi bir tedavi görüyor musunuz?',
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _herhangitedavi = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "İlaç kullanıyor musunuz",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _ilackullan = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10), */
-                      /*  TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText:
-                              "Herhangi bir hastalığınız var mı, geçirdiniz mi ?",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _herhangibirtibbisorun = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "İla. alerjiniz var mı ? ",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _ilacalerji = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText:
-                              'Kadınlarda hamilelik,düşük,adet ve menapoz bilgileri ?',
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _hamilelidusuk = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Kötü alışkanlıpınız var mı",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _kotualiskanlik = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Kullanılan tehkileli ilaçlar",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _tehlikeliilackullanilan = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        value: _basveboyunradyoterapi.isEmpty
-                            ? null
-                            : _basveboyunradyoterapi,
-                        items: _basveboyunradyoterapiliste.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.isEmpty ? null : value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText:
-                              "Baş boyun bölgesinde radyoterapi gördünüz mü ?",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              _basveboyunradyoterapi = value;
-                            } else {
-                              _basveboyunradyoterapi = "";
-                            }
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        value: _kanamauzun.isEmpty ? null : _kanamauzun,
-                        items: _kanamauzunliste.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.isEmpty ? null : value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Kanama uzun sürer mi ?",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              _kanamauzun = value;
-                            } else {
-                              _kanamauzun = "";
-                            }
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText:
-                              "Bunların dışında herhangi bir tıbbı sorununuz var mı ?",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _herhangibirtibbisorun = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: 'En son dişhekimi muayenesi ve tedavisi?',
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _ensondishekimitedavi = value;
-                          });
-                        },
-                      ), */
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: CustomButton(
@@ -1101,7 +334,7 @@ class _HastaekleState extends State<Hastaekle> {
                                   _adsoyad.toString(),
                                   _telefonno.toString(),
                                   _onemlinot.toString(),
-                                  _hekim.toString());
+                                  0);
                               if (son == true) {
                                 Get.snackbar('Başarılı', 'Hasta Eklendi');
 

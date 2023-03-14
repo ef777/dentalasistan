@@ -42,10 +42,17 @@ class _RandevuEkleState extends State<RandevuEkle> {
     'Dr. Mehmet',
   ];
 
+  doktorgetir() {}
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    void initState() {
+      Future.delayed(const Duration(seconds: 2), () {});
+
+      super.initState();
+    }
+
     return Scaffold(
         appBar: AppBar(
           title: Text('Randevu Ekle'),
@@ -252,9 +259,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
                   ElevatedButton(
                     onPressed: () {
                       Get.to(AppointmentPage());
-                      if (_formKey.currentState!.validate()) {
-//TODO: Kaydetme işlemi yapılacak.
-                      }
+                      if (_formKey.currentState!.validate()) {}
                     },
                     child: Text('Kaydet'),
                     style: ElevatedButton.styleFrom(
