@@ -169,6 +169,9 @@ class _RandevuEkleState extends State<RandevuEkle> {
     }
   }
 
+  String _searchText = "";
+
+  List<HastaModel> _searchResult = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -240,35 +243,65 @@ class _RandevuEkleState extends State<RandevuEkle> {
                   child: ListView(
                     children: <Widget>[
                       const SizedBox(height: 10),
-                      DropdownButtonFormField<HastaModel>(
-                        value: _selectedHasta,
-                        items: hastaListesi.map((HastaModel value) {
-                          return DropdownMenuItem<HastaModel>(
-                            value: value,
-                            child: Text(value.name),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
+                      Column(
+                        children: <Widget>[
+                          TextField(
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.search),
+                              hintText: 'Hasta ismi...',
+                            ),
+                            onChanged: (text) {
+                              setState(() {
+                                _searchText = text;
+                                _searchResult = hastaListesi
+                                    .where((hasta) => hasta.name
+                                        .toLowerCase()
+                                        .contains(_searchText.toLowerCase()))
+                                    .toList();
+                              });
+                            },
                           ),
-                          labelText: "Hasta Seçiniz",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                          SizedBox(
+                              height:
+                                  10), // arama kutusu ile seçici arasına boşluk ekler
+                          DropdownButtonFormField<HastaModel>(
+                            value: _selectedHasta,
+                            items: _searchText.isEmpty
+                                ? hastaListesi.map((HastaModel value) {
+                                    return DropdownMenuItem<HastaModel>(
+                                      value: value,
+                                      child: Text(value.name),
+                                    );
+                                  }).toList()
+                                : _searchResult.map((HastaModel value) {
+                                    return DropdownMenuItem<HastaModel>(
+                                      value: value,
+                                      child: Text(value.name),
+                                    );
+                                  }).toList(),
+                            decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: solidColor),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              labelText: "Hasta Seçiniz",
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 16,
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedHasta = value;
+                              });
+                            },
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedHasta = value;
-                          });
-                        },
+                        ],
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(

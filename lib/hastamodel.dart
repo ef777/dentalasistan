@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'config.dart';
 import 'package:http/http.dart' as http;
 
+//hasta getirme için
 class HastaModel {
   final int id;
   final String name;
