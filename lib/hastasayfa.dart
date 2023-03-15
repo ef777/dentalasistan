@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dental_asistanim/const.dart';
+import 'package:dental_asistanim/hastaDetay/hasta_sayfa_detay.dart';
 import 'package:dental_asistanim/sizeconfig.dart';
 import 'package:http/http.dart' as http;
 import 'package:dental_asistanim/randevutarih.dart';
@@ -222,110 +223,115 @@ class HastaCard extends StatelessWidget {
   final dynamic item;
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              width: double.infinity,
-              height: 130,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(dfBorderRadius / 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    offset: const Offset(0, 3),
-                    blurRadius: 8.0,
-                    spreadRadius: 2.0,
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Hasta Adı : " + item['name'],
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.more_vert_rounded))
-                    ],
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 4, right: 23),
-                    child: Divider(
-                      height: 10,
-                      thickness: 1,
-                      color: Color.fromARGB(255, 230, 224, 224),
+    return TextButton(
+      onPressed: () {
+        Get.to(HastaDetaySayfa());
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                width: double.infinity,
+                height: 130,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(dfBorderRadius / 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      offset: const Offset(0, 3),
+                      blurRadius: 8.0,
+                      spreadRadius: 2.0,
                     ),
-                  ),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.blue,
-                        backgroundImage: NetworkImage(item["avatar"] == null
-                            ? "https://www.w3schools.com/howto/img_avatar.png"
-                            : item["avatar"].toString()),
-                        radius: 24.0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: solidColor,
-                              width: 3.0,
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Hasta Adı : " + item['name'],
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                        IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.more_vert_rounded))
+                      ],
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 4, right: 23),
+                      child: Divider(
+                        height: 10,
+                        thickness: 1,
+                        color: Color.fromARGB(255, 230, 224, 224),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.blue,
+                          backgroundImage: NetworkImage(item["avatar"] == null
+                              ? "https://www.w3schools.com/howto/img_avatar.png"
+                              : item["avatar"].toString()),
+                          radius: 24.0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: solidColor,
+                                width: 3.0,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: SizeConfig.screenWidth * 0.02),
-                      Row(
-                        children: [
-                          Text(
-                            "Telefon : ",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            item['phone'] ?? "*",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                        SizedBox(width: SizeConfig.screenWidth * 0.02),
+                        Row(
+                          children: [
+                            Text(
+                              "Telefon : ",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            Text(
+                              item['phone'] ?? "*",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Positioned(
-            left: 0,
-            top: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: const Color.fromRGBO(55, 72, 138, 1),
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(dfBorderRadius / 2),
-                      topLeft: Radius.circular(dfBorderRadius / 2))),
-              height: 130,
-              width: 9,
+            Positioned(
+              left: 0,
+              top: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                    color: const Color.fromRGBO(55, 72, 138, 1),
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(dfBorderRadius / 2),
+                        topLeft: Radius.circular(dfBorderRadius / 2))),
+                height: 130,
+                width: 9,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
