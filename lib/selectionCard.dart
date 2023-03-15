@@ -22,7 +22,7 @@ class SelectionCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(dfBorderRadius / 2),
@@ -53,6 +53,9 @@ class SelectionCard extends StatelessWidget {
             height: 112,
             fit: BoxFit.cover,
           ),
+        ),
+        SizedBox(
+          width: size.width * 0.04,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
