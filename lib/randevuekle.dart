@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:dental_asistanim/const.dart';
 import 'package:dental_asistanim/randevutarih.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
+import 'config.dart';
 import 'custon_button.dart';
 
 class RandevuEkle extends StatefulWidget {
@@ -46,6 +50,35 @@ class _RandevuEkleState extends State<RandevuEkle> {
   ];
 
   doktorgetir() {}
+  randevuekle() async {
+    try {
+      var url = Uri.parse('https://demo.dentalasistanim.com/api/appointments');
+      var response = await http.post(url, headers: {
+        'Accept': 'application/json',
+        'branchId': '${Config.subeid}',
+        'Authorization': 'Bearer ${Config.token}'
+      }, body: {
+        "patient_id": "1",
+        "doctor_id": "1",
+        "treatment_group_id": "1",
+        "start_at": "2021-09-01 10:00",
+        "end_at": "2021-10-01 10:00",
+      });
+      String responseString = response.body;
+      Map<String, dynamic> responseData = json.decode(responseString);
+
+      if (response.statusCode == 200) {
+        print("başarılı");
+        print(responseData);
+      } else {
+        print(responseData);
+        print("başarısız");
+      }
+    } catch (e) {
+      print("");
+    }
+  }
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -275,7 +308,9 @@ class _RandevuEkleState extends State<RandevuEkle> {
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: CustomButton(
                           height: 48,
-                          onPressed: () async {},
+                          onPressed: () async {
+                            await randevuekle();
+                          },
                           title: "Kaydet",
                         ),
                       )

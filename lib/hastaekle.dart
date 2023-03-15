@@ -73,6 +73,10 @@ class _HastaekleState extends State<Hastaekle> {
     'Seçiniz',
     'Dr. Ali',
   ];
+  List<String> _hekimlistedeger = [
+    'Seçiniz',
+  ];
+
   String _herhangitedavi = "";
   String _ilackullan = "";
   String _hastalik = "";
@@ -100,18 +104,29 @@ class _HastaekleState extends State<Hastaekle> {
     try {
       var url = Uri.parse(
           'https://demo.dentalasistanim.com/api/branches/${Config.subeid}/doctors');
-      var response = await http.post(url, headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ${Config.token}'
-      }, body: {});
+      var response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Config.token}'
+        },
+      );
       String responseString = response.body;
       Map<String, dynamic> responseData = json.decode(responseString);
 
       if (response.statusCode == 200) {
         print("başarılı");
-      } else {}
+        print(responseData["data"]);
+        print(responseData);
+        return responseData["data"];
+      } else {
+        print("başarısız");
+        print(responseData);
+        return "0";
+      }
     } catch (e) {
-      print("");
+      print("hata");
+      print(e);
     }
   }
 
@@ -147,6 +162,24 @@ class _HastaekleState extends State<Hastaekle> {
     } catch (e) {
       print(e);
     }
+  }
+
+  doktorsec(doktor) {
+    _hekimliste.clear();
+    _hekimlistedeger.clear();
+    for (var i = 0; i < doktor.length; i++) {
+      _hekimliste.add(doktor[i]["name"]);
+      _hekimlistedeger.add(doktor[i]["id"].toString());
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    var doktor = doktorliste();
+
+    print("doktor");
+    print(doktor);
   }
 
   @override
@@ -317,7 +350,8 @@ class _HastaekleState extends State<Hastaekle> {
                         onChanged: (value) {
                           setState(() {
                             if (value != null) {
-                              _hekim = value;
+                              var index = _hekimliste.indexOf(value);
+                              _hekim = _hekimlistedeger[index];
                             } else {
                               _hekim = "";
                             }
