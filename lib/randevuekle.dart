@@ -5,6 +5,7 @@ import 'package:dental_asistanim/randevutarih.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:dental_asistanim/hastamodel.dart';
 
 import 'config.dart';
 import 'custon_button.dart';
@@ -15,18 +16,13 @@ class RandevuEkle extends StatefulWidget {
 }
 
 class _RandevuEkleState extends State<RandevuEkle> {
-  String _selectedHasta = 'Seçiniz';
+  HastaModel? _selectedHasta;
   String _selectedRandevuTuru = "Seçiniz";
   String _selectedHekim = "Seçiniz";
   String _selectedRandevuDurumu = "Seçiniz";
   String _randevuNotu = "";
 
-  List<String> hastaListesi = [
-    'Seçiniz',
-    'Hasta 1',
-    'Hasta 2',
-    'Hasta 3',
-  ];
+  List<HastaModel> hastaListesi = [];
 
   List<String> randevuTurleri = [
     'Seçiniz',
@@ -64,6 +60,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
 
       if (response.statusCode == 200) {
         print("başarılı");
+        print("randevutur");
         print(responseData["data"]);
         return responseData["data"];
       } else {
@@ -118,8 +115,9 @@ class _RandevuEkleState extends State<RandevuEkle> {
 
       if (response.statusCode == 200) {
         print("başarılı");
+        print("doktorliste");
+
         print(responseData["data"]);
-        print(responseData);
         return responseData["data"];
       } else {
         print("başarısız");
@@ -132,31 +130,13 @@ class _RandevuEkleState extends State<RandevuEkle> {
     }
   }
 
-  hastaal() async {
+  Future<List<HastaModel>> hasta() async {
     try {
-      var url = Uri.parse('https://demo.dentalasistanim.com/api/patients');
-      var response = await http.get(
-        url,
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${Config.token}'
-        },
-      );
-      String responseString = response.body;
-      print("bu cevap");
-
-      print(responseString);
-      print("bu token");
-      print(Config.token);
-      Map<String, dynamic> responseData = json.decode(responseString);
-
-      if (response.statusCode == 200) {
-        return responseData['data']['data'];
-      } else {
-        return "0";
-      }
+      List<HastaModel> hasta = await HastaModel.hastagetir();
+      return hasta;
     } catch (e) {
       print(e);
+      return [];
     }
   }
 
@@ -192,13 +172,28 @@ class _RandevuEkleState extends State<RandevuEkle> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      hastaListesi = [];
+    });
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final hastaList = await hasta();
+      setState(() {
+        hastaListesi = hastaList;
+      });
+    });
+
+    var doktor = doktorliste();
+    var durum = randevudurumlar();
+
+    Future.delayed(const Duration(seconds: 1), () {});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    void initState() {
-      Future.delayed(const Duration(seconds: 2), () {});
-
-      super.initState();
-    }
-
     return Scaffold(
         backgroundColor: sfColor,
         appBar: AppBar(
@@ -245,12 +240,12 @@ class _RandevuEkleState extends State<RandevuEkle> {
                   child: ListView(
                     children: <Widget>[
                       const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        value: _selectedHasta.isEmpty ? null : _selectedHasta,
-                        items: hastaListesi.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.isEmpty ? null : value,
-                            child: Text(value),
+                      DropdownButtonFormField<HastaModel>(
+                        value: _selectedHasta,
+                        items: hastaListesi.map((HastaModel value) {
+                          return DropdownMenuItem<HastaModel>(
+                            value: value,
+                            child: Text(value.name),
                           );
                         }).toList(),
                         decoration: InputDecoration(
@@ -271,11 +266,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
                         ),
                         onChanged: (value) {
                           setState(() {
-                            if (value != null) {
-                              _selectedHasta = value;
-                            } else {
-                              _selectedHasta = "";
-                            }
+                            _selectedHasta = value;
                           });
                         },
                       ),

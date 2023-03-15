@@ -145,7 +145,7 @@ class _HastaekleState extends State<Hastaekle> {
         "name": "${ad.toString()}",
         "phone": "${numara.toString()}",
         "warn": "${uyari.toString()}",
-        "doctor_id": "53",
+        "doctor_id": "${doctorid.toString()}",
       });
       String responseString = response.body;
       Map<String, dynamic> responseData = json.decode(responseString);
@@ -368,7 +368,7 @@ class _HastaekleState extends State<Hastaekle> {
                                   _adsoyad.toString(),
                                   _telefonno.toString(),
                                   _onemlinot.toString(),
-                                  0);
+                                  _hekim.toString());
                               if (son == true) {
                                 Get.snackbar('Başarılı', 'Hasta Eklendi');
 
