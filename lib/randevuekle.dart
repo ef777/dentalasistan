@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:dental_asistanim/const.dart';
 import 'package:dental_asistanim/randevutarih.dart';
 import 'package:flutter/material.dart';
@@ -10,41 +11,101 @@ import 'package:dental_asistanim/hastamodel.dart';
 import 'config.dart';
 import 'custon_button.dart';
 
-class RandevuEkle extends StatefulWidget {
-  @override
-  _RandevuEkleState createState() => _RandevuEkleState();
+class doktorgetmodel {
+  dynamic? id;
+  dynamic? role_id;
+  dynamic? tenant_id;
+  dynamic? name;
+  dynamic? email;
+  dynamic? phone;
+  dynamic? commission_rate;
+  dynamic? email_verified_at;
+  dynamic? avatar;
+  dynamic? status;
+  dynamic? opening_time;
+  dynamic? closing_time;
+  dynamic? created_at;
+  dynamic? updated_at;
+  dynamic? deleted_at;
+
+  static Future<List<doktorgetmodel>> doktorliste() async {
+    try {
+      var url = Uri.parse(
+          'https://demo.dentalasistanim.com/api/branches/${Config.subeid}/doctors');
+      var response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Config.token}'
+        },
+      );
+      String responseString = response.body;
+      Map<String, dynamic> responseData = json.decode(responseString);
+
+      if (response.statusCode == 200) {
+        print("başarılı");
+        print("doktorliste");
+        List<doktorgetmodel> docmodels = [];
+        for (var doktorgetmodeljson in responseData['data']) {
+          docmodels.add(doktorgetmodel.fromJson(doktorgetmodeljson));
+        }
+        print(responseData["data"]);
+        return docmodels;
+      } else {
+        print("başarısız");
+        print(responseData);
+        return [];
+      }
+    } catch (e) {
+      print("hata");
+      print(e);
+      return [];
+    }
+  }
+
+  doktorgetmodel(
+      {required this.id,
+      required this.name,
+      this.phone,
+      this.tenant_id,
+      this.avatar,
+      this.commission_rate,
+      this.email,
+      this.role_id,
+      this.closing_time,
+      this.opening_time,
+      this.email_verified_at,
+      this.status,
+      this.created_at,
+      this.deleted_at,
+      this.updated_at});
+  // [{id: 3, role_id: 4, tenant_id: 1, name: Doktor 1, email: doktor@onderakkaya.com, phone: 05413317717, commission_rate: 10, email_verified_at: null, avatar: null, status: 1, opening_time: null, closing_time: null, created_at: 2023-02-10T18:39:58.000000Z, updated_at: 2023-02-10T18:39:58.000000Z, deleted_at: null}]
+  factory doktorgetmodel.fromJson(Map<String, dynamic> json) {
+    return doktorgetmodel(
+      id: json['id'],
+      name: json['name'],
+      phone: json['phone'],
+      tenant_id: json['tenant_id'],
+      avatar: json['avatar'],
+      commission_rate: json['commission_rate'],
+      email: json['email'],
+      role_id: json['role_id'],
+      closing_time: json['closing_time'],
+      opening_time: json['opening_time'],
+      email_verified_at: json['email_verified_at'],
+      status: json['status'],
+      created_at: json['created_at'],
+      deleted_at: json['deleted_at'],
+      updated_at: json['updated_at'],
+    );
+  }
 }
 
-class _RandevuEkleState extends State<RandevuEkle> {
-  HastaModel? _selectedHasta;
-  String _selectedRandevuTuru = "Seçiniz";
-  String _selectedHekim = "Seçiniz";
-  String _selectedRandevuDurumu = "Seçiniz";
-  String _randevuNotu = "";
-
-  List<HastaModel> hastaListesi = [];
-
-  List<String> randevuTurleri = [
-    'Seçiniz',
-    'Acil',
-    'Normal',
-    'Kontrol',
-  ];
-  List<String> randevuDurumu = [
-    'Seçiniz',
-    'Hasta Bekleniyor',
-    'Hasta Randevuya Geldi',
-    'Hasta Randevuyu İptal Etti',
-    'Hasta Randevuyu Gelmedi'
-  ];
-
-  List<String> hekimler = [
-    'Seçiniz',
-    'Dr. Ali',
-    'Dr. Ayşe',
-    'Dr. Mehmet',
-  ];
-  randevuturugrup() async {
+class randevugrupmodel {
+  int? id;
+  String? name;
+  String? class_name;
+  static Future<List<randevugrupmodel>> randevuturugrup() async {
     try {
       var url =
           Uri.parse('https://demo.dentalasistanim.com/api/treatment-groups');
@@ -62,15 +123,63 @@ class _RandevuEkleState extends State<RandevuEkle> {
         print("başarılı");
         print("randevutur");
         print(responseData["data"]);
-        return responseData["data"];
-      } else {
+        List<randevugrupmodel> grupmodels = [];
+        for (var randevugrupmodeljson in responseData['data']) {
+          grupmodels.add(randevugrupmodel.fromJson(randevugrupmodeljson));
+        }
         print("başarısız");
         print(responseData);
+        return grupmodels;
+      } else {
+        return [];
       }
     } catch (e) {
+      return [];
       print(e);
     }
   }
+
+  randevugrupmodel({
+    required this.id,
+    required this.name,
+    required this.class_name,
+  });
+  factory randevugrupmodel.fromJson(Map<String, dynamic> json) {
+    return randevugrupmodel(
+      id: json['id'],
+      name: json['name'],
+      class_name: json['class_name'],
+    );
+  }
+}
+
+class RandevuEkle extends StatefulWidget {
+  @override
+  _RandevuEkleState createState() => _RandevuEkleState();
+}
+
+class _RandevuEkleState extends State<RandevuEkle> {
+  HastaModel? _selectedHasta;
+  randevugrupmodel? _selectedRandevuTuru;
+
+  doktorgetmodel? _selectedHekim;
+  String _selectedRandevuDurumu = "Seçiniz";
+  String _randevuNotu = "";
+
+  List<HastaModel> hastaListesi = [];
+  DateTime? startDate;
+  DateTime? endDate;
+  List<randevugrupmodel> randevuTurleri = [];
+
+  List<String> randevuDurumu = [
+    'Seçiniz',
+    'Hasta Bekleniyor',
+    'Hasta Randevuya Geldi',
+    'Hasta Randevuyu İptal Etti',
+    'Hasta Randevuyu Gelmedi'
+  ];
+
+  List<doktorgetmodel> hekimler = [];
 
   randevudurumlar() async {
     try {
@@ -99,34 +208,23 @@ class _RandevuEkleState extends State<RandevuEkle> {
     }
   }
 
-  doktorliste() async {
+  Future<List<doktorgetmodel>> doktor() async {
     try {
-      var url = Uri.parse(
-          'https://demo.dentalasistanim.com/api/branches/${Config.subeid}/doctors');
-      var response = await http.get(
-        url,
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${Config.token}'
-        },
-      );
-      String responseString = response.body;
-      Map<String, dynamic> responseData = json.decode(responseString);
-
-      if (response.statusCode == 200) {
-        print("başarılı");
-        print("doktorliste");
-
-        print(responseData["data"]);
-        return responseData["data"];
-      } else {
-        print("başarısız");
-        print(responseData);
-        return "0";
-      }
+      List<doktorgetmodel> doktor = await doktorgetmodel.doktorliste();
+      return doktor;
     } catch (e) {
-      print("hata");
       print(e);
+      return [];
+    }
+  }
+
+  Future<List<randevugrupmodel>> randevugrup() async {
+    try {
+      List<randevugrupmodel> hasta = await randevugrupmodel.randevuturugrup();
+      return hasta;
+    } catch (e) {
+      print(e);
+      return [];
     }
   }
 
@@ -140,7 +238,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
     }
   }
 
-  randevuekle() async {
+  randevuekle(hastaid, randevutur, doktor, not, durum) async {
     try {
       var url = Uri.parse('https://demo.dentalasistanim.com/api/appointments');
       var response = await http.post(url, headers: {
@@ -148,11 +246,11 @@ class _RandevuEkleState extends State<RandevuEkle> {
         'branchId': '${Config.subeid}',
         'Authorization': 'Bearer ${Config.token}'
       }, body: {
-        "patient_id": "1",
-        "doctor_id": "1",
-        "treatment_group_id": "1",
+        "patient_id": "${hastaid.toString()}",
+        "doctor_id": "${doktor.toString()}",
+        "treatment_group_id": "${randevutur.toString()}",
         "start_at": "2021-09-01 10:00",
-        "end_at": "2021-10-01 10:00",
+        "end_at": "2024-10-01 10:00",
       });
       String responseString = response.body;
       Map<String, dynamic> responseData = json.decode(responseString);
@@ -160,13 +258,42 @@ class _RandevuEkleState extends State<RandevuEkle> {
       if (response.statusCode == 200) {
         print("başarılı");
         print(responseData);
+        return true;
       } else {
         print(responseData);
         print("başarısız");
+        return false;
       }
     } catch (e) {
-      print("");
+      print("hataa");
+      return false;
     }
+  }
+
+  tarihsec() {
+    showCustomDateRangePicker(
+      primaryColor: solidColor,
+      backgroundColor: solidColor,
+      context,
+      dismissible: true,
+      minimumDate: DateTime.now().subtract(const Duration(days: 30)),
+      maximumDate: DateTime.now().add(const Duration(days: 30)),
+      endDate: endDate,
+      startDate: startDate,
+      onApplyClick: (start, end) {
+        setState(() {
+          endDate = end;
+          startDate = start;
+        });
+      },
+      onCancelClick: () {
+        setState(() {
+          endDate = null;
+          startDate = null;
+        });
+      },
+    );
+    return true;
   }
 
   String _searchText = "";
@@ -188,8 +315,19 @@ class _RandevuEkleState extends State<RandevuEkle> {
         hastaListesi = hastaList;
       });
     });
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final randevu = await randevugrup();
+      setState(() {
+        randevuTurleri = randevu;
+      });
+    });
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final doktorlar = await doktor();
+      setState(() {
+        hekimler = doktorlar;
+      });
+    });
 
-    var doktor = doktorliste();
     var durum = randevudurumlar();
 
     Future.delayed(const Duration(seconds: 1), () {});
@@ -304,14 +442,12 @@ class _RandevuEkleState extends State<RandevuEkle> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        value: _selectedRandevuTuru.isEmpty
-                            ? null
-                            : _selectedRandevuTuru,
-                        items: randevuTurleri.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.isEmpty ? null : value,
-                            child: Text(value),
+                      DropdownButtonFormField<randevugrupmodel>(
+                        value: _selectedRandevuTuru,
+                        items: randevuTurleri.map((randevugrupmodel value) {
+                          return DropdownMenuItem<randevugrupmodel>(
+                            value: value,
+                            child: Text(value.name!),
                           );
                         }).toList(),
                         decoration: InputDecoration(
@@ -332,21 +468,17 @@ class _RandevuEkleState extends State<RandevuEkle> {
                         ),
                         onChanged: (value) {
                           setState(() {
-                            if (value != null) {
-                              _selectedRandevuTuru = value;
-                            } else {
-                              _selectedRandevuTuru = "";
-                            }
+                            _selectedRandevuTuru = value;
                           });
                         },
                       ),
                       const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        value: _selectedHekim.isEmpty ? null : _selectedHekim,
-                        items: hekimler.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.isEmpty ? null : value,
-                            child: Text(value),
+                      DropdownButtonFormField<doktorgetmodel>(
+                        value: _selectedHekim,
+                        items: hekimler.map((doktorgetmodel value) {
+                          return DropdownMenuItem<doktorgetmodel>(
+                            value: value,
+                            child: Text(value.name!),
                           );
                         }).toList(),
                         decoration: InputDecoration(
@@ -354,7 +486,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
                             borderSide: BorderSide(color: solidColor),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          labelText: "Hekim Seçiniz",
+                          labelText: "Doktor Seçiniz",
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
@@ -367,11 +499,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
                         ),
                         onChanged: (value) {
                           setState(() {
-                            if (value != null) {
-                              _selectedHekim = value;
-                            } else {
-                              _selectedHekim = "";
-                            }
+                            _selectedHekim = value;
                           });
                         },
                       ),
@@ -443,7 +571,27 @@ class _RandevuEkleState extends State<RandevuEkle> {
                         child: CustomButton(
                           height: 48,
                           onPressed: () async {
-                            await randevuekle();
+                            if (endDate.isNull && startDate.isNull) {
+                              tarihsec();
+                            }
+                            if (!endDate.isNull && !startDate.isNull) {
+                              var son = await randevuekle(
+                                _selectedHasta!.id,
+                                _selectedRandevuTuru!.id,
+                                _selectedHekim!.id,
+                                "not",
+                                _selectedRandevuDurumu,
+                              );
+                              if (son == true) {
+                                Get.snackbar('Başarılı', 'Hasta Eklendi');
+                              } else {
+                                Get.snackbar('Başarısız', 'Hasta Eklenmedi!');
+                              }
+                            } else {
+                              Get.snackbar('Tarih!', 'Tarih Eklenmedi!');
+
+                              tarihsec();
+                            }
                           },
                           title: "Kaydet",
                         ),

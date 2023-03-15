@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
+import 'package:dental_asistanim/randevumodel.dart';
 import 'package:dental_asistanim/sizeconfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -20,35 +21,24 @@ class YaklasanRandevu extends StatefulWidget {
 
 class _YaklasanRandevuState extends State<YaklasanRandevu> {
   //https://demo.dentalasistanim.com/api/appointments?start_at=2022-01-08&end_at=2022-02-10
-  randevugetir() async {
-    try {
-      var url = Uri.parse('https://demo.dentalasistanim.com/api/appointments');
-      var response = await http.get(
-        url,
-        headers: {
-          'Accept': 'application/json',
-          'branchId': '${Config.subeid}',
-          'Authorization': 'Bearer ${Config.token}'
-        },
-      );
-      String responseString = response.body;
-      Map<String, dynamic> responseData = json.decode(responseString);
-
-      if (response.statusCode == 200) {
-        print("başarılı");
-        print(responseData["data"]["data"]);
-        return responseData["data"]["data"];
-      } else {
-        print("başarısız");
-        print(responseData);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
 
   DateTime? startDate;
   DateTime? endDate;
+
+  Future<List<Datum>> randdatacek() async {
+    try {
+      print("data çekeliuot");
+      List<Datum> randevu = await Randevusayfa.randevugetir();
+      print("çekilen data ");
+      print(randevu[0].id);
+      print("tamam?");
+      return randevu;
+    } catch (e) {
+      print("hata randevu");
+      return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,10 +84,10 @@ class _YaklasanRandevuState extends State<YaklasanRandevu> {
         backgroundColor: Colors.transparent,
       ),
       body: FutureBuilder(
-          future: randevugetir(),
+          future: randdatacek(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              var veri = snapshot.data as List;
+              var veri = snapshot.data as List<Datum>;
               return Column(
                 children: [
                   Padding(
@@ -130,10 +120,14 @@ class _YaklasanRandevuState extends State<YaklasanRandevu> {
                         itemCount: veri.length,
                         itemBuilder: (context, index) {
                           return RandevuCard(
-                            hastaAdi: veri[index]["patient"]["name"],
-                            doktorAdi: veri[index]["doctor"]["name"],
-                            randevuTarihi: veri[index]["start_at"],
-                            randevuSaati: veri[index]["start_at"],
+                            hastaAdi: veri[index].patient?.name == null
+                                ? "Hasta adı yok!"
+                                : veri[index].patient!.name,
+                            doktorAdi: veri[index].doctor.name,
+                            randevuTarihi: veri[index].startAt.toString(),
+                            randevuSaati: veri[index].startAt.hour.toString() +
+                                ":" +
+                                veri[index].startAt.minute.toString(),
                           );
                         },
                       ),

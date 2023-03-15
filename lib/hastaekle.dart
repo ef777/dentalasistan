@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:dental_asistanim/home_view.dart';
+import 'package:dental_asistanim/randevuekle.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:dental_asistanim/const.dart';
@@ -372,7 +373,7 @@ class _HastaekleState extends State<Hastaekle> {
                               if (son == true) {
                                 Get.snackbar('Başarılı', 'Hasta Eklendi');
 
-                                Get.to(AppointmentPage());
+                                Get.to(RandevuEkle());
                               } else {
                                 Get.snackbar('Başarısız', 'Hasta Eklenmedi!');
                               }
