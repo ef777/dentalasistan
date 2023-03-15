@@ -1,4 +1,4 @@
-import 'dart:convert';
+/* import 'dart:convert';
 
 import 'config.dart';
 import 'package:http/http.dart' as http;
@@ -12,42 +12,71 @@ import 'dart:convert';
 
 class Randevutur {
   Randevutur({
+    required this.success,
+    required this.message,
     required this.data,
   });
 
-  final List<randevugrup> data;
+  randevuturugrup() async {
+    try {
+      var url =
+          Uri.parse('https://demo.dentalasistanim.com/api/treatment-groups');
+      var response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Config.token}'
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print("başarılı");
+        print("randevutur");
+
+        return response;
+      } else {
+        print("başarısız");
+        return response;
+      }
+    } catch (e) {
+      print("hata");
+      print(e);
+    }
+  }
+
+  final bool success;
+  final String message;
+  final List<Datum> data;
 
   factory Randevutur.fromRawJson(String str) =>
       Randevutur.fromJson(json.decode(str));
 
   factory Randevutur.fromJson(Map<String, dynamic> json) => Randevutur(
-        data: List<randevugrup>.from(
-            json["data"].map((x) => randevugrup.fromJson(x))),
+        success: json["success"],
+        message: json["message"],
+        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
       );
-
-  class randevugrup {
-    randevugrup({
-      required this.id,
-      required this.name,
-      required this.className,
-    });
-
-    final int id;
-    final String name;
-    final String className;
-
-    factory randevugrup.fromRawJson(String str) =>
-        randevugrup.fromJson(json.decode(str));
-
-    factory randevugrup.fromJson(Map<String, dynamic> json) => randevugrup(
-          id: json["id"],
-          name: json["name"],
-          className: json["class_name"],
-        );
-  }
 }
 
+class Datum {
+  Datum({
+    required this.id,
+    required this.name,
+    required this.className,
+  });
 
+  final int id;
+  final String name;
+  final String className;
+
+  factory Datum.fromRawJson(String str) => Datum.fromJson(json.decode(str));
+
+  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+        id: json["id"],
+        name: json["name"],
+        className: json["class_name"],
+      );
+}/*  */
 
 class RandevuModel {
   randevudurumlar() async {
@@ -77,3 +106,4 @@ class RandevuModel {
     }
   }
 }
+ */
