@@ -48,8 +48,118 @@ class _RandevuEkleState extends State<RandevuEkle> {
     'Dr. Ayşe',
     'Dr. Mehmet',
   ];
+  randevuturugrup() async {
+    try {
+      var url =
+          Uri.parse('https://demo.dentalasistanim.com/api/treatment-groups');
+      var response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Config.token}'
+        },
+      );
+      String responseString = response.body;
+      Map<String, dynamic> responseData = json.decode(responseString);
 
-  doktorgetir() {}
+      if (response.statusCode == 200) {
+        print("başarılı");
+        print(responseData["data"]);
+        return responseData["data"];
+      } else {
+        print("başarısız");
+        print(responseData);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  randevudurumlar() async {
+    try {
+      var url = Uri.parse(
+          'https://demo.dentalasistanim.com/api/appointment-statuses');
+      var response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Config.token}'
+        },
+      );
+      String responseString = response.body;
+      Map<String, dynamic> responseData = json.decode(responseString);
+
+      if (response.statusCode == 200) {
+        print("başarılı");
+        print(responseData["data"]);
+        return responseData["data"];
+      } else {
+        print("başarısız");
+        print(responseData);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  doktorliste() async {
+    try {
+      var url = Uri.parse(
+          'https://demo.dentalasistanim.com/api/branches/${Config.subeid}/doctors');
+      var response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Config.token}'
+        },
+      );
+      String responseString = response.body;
+      Map<String, dynamic> responseData = json.decode(responseString);
+
+      if (response.statusCode == 200) {
+        print("başarılı");
+        print(responseData["data"]);
+        print(responseData);
+        return responseData["data"];
+      } else {
+        print("başarısız");
+        print(responseData);
+        return "0";
+      }
+    } catch (e) {
+      print("hata");
+      print(e);
+    }
+  }
+
+  hastaal() async {
+    try {
+      var url = Uri.parse('https://demo.dentalasistanim.com/api/patients');
+      var response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${Config.token}'
+        },
+      );
+      String responseString = response.body;
+      print("bu cevap");
+
+      print(responseString);
+      print("bu token");
+      print(Config.token);
+      Map<String, dynamic> responseData = json.decode(responseString);
+
+      if (response.statusCode == 200) {
+        return responseData['data']['data'];
+      } else {
+        return "0";
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   randevuekle() async {
     try {
       var url = Uri.parse('https://demo.dentalasistanim.com/api/appointments');

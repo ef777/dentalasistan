@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:dental_asistanim/sizeconfig.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
+import 'config.dart';
 import 'const.dart';
 import 'package:intl/intl.dart';
 
@@ -15,71 +19,39 @@ class YaklasanRandevu extends StatefulWidget {
 }
 
 class _YaklasanRandevuState extends State<YaklasanRandevu> {
+  //https://demo.dentalasistanim.com/api/appointments?start_at=2022-01-08&end_at=2022-02-10
+  randevugetir() async {
+    try {
+      var url = Uri.parse('https://demo.dentalasistanim.com/api/appointments');
+      var response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'branchId': '${Config.subeid}',
+          'Authorization': 'Bearer ${Config.token}'
+        },
+      );
+      String responseString = response.body;
+      Map<String, dynamic> responseData = json.decode(responseString);
+
+      if (response.statusCode == 200) {
+        print("başarılı");
+        print(responseData["data"]["data"]);
+        return responseData["data"]["data"];
+      } else {
+        print("başarısız");
+        print(responseData);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   DateTime? startDate;
   DateTime? endDate;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: sfColor,
-      appBar: AppBar(
-        elevation: 0,
-        title: Text(
-          "Yaklaşan Randevu",
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall
-              ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
-        ),
-        backgroundColor: Colors.transparent,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 24, bottom: 8),
-            child: Image.asset(
-              "assets/yaklasan.png",
-              height: 200,
-            ),
-          ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.white.withOpacity(0.3),
-                    offset: const Offset(0, 3),
-                    blurRadius: 8.0,
-                    spreadRadius: 4.0,
-                  ),
-                ],
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(dfBorderRadius),
-                  topRight: Radius.circular(dfBorderRadius),
-                ),
-              ),
-              child: ListView(
-                children: const [
-                  RandevuCard(
-                    hastaAdi: "Kemal Erkmen",
-                    doktorAdi: "Dr. Önder Akkaya",
-                    randevuTarihi: "çarşamba haziran 20",
-                    randevuSaati: "8:00 - 9:30",
-                  ),
-                  RandevuCard(
-                    hastaAdi: "Mehmet Kaya",
-                    doktorAdi: "Dr. Test Adı",
-                    randevuTarihi: "perşembe haziran 21",
-                    randevuSaati: "12:30 - 13:30",
-                  ),
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: solidColor,
         onPressed: () {
@@ -109,6 +81,72 @@ class _YaklasanRandevuState extends State<YaklasanRandevu> {
         tooltip: 'choose date Range',
         child: const Icon(Icons.calendar_today_outlined, color: Colors.white),
       ),
+      backgroundColor: sfColor,
+      appBar: AppBar(
+        elevation: 0,
+        title: Text(
+          "Yaklaşan Randevu",
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall
+              ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
+        ),
+        backgroundColor: Colors.transparent,
+      ),
+      body: FutureBuilder(
+          future: randevugetir(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var veri = snapshot.data as List;
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 24, bottom: 8),
+                    child: Image.asset(
+                      "assets/yaklasan.png",
+                      height: 200,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.white.withOpacity(0.3),
+                            offset: const Offset(0, 3),
+                            blurRadius: 8.0,
+                            spreadRadius: 4.0,
+                          ),
+                        ],
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(dfBorderRadius),
+                          topRight: Radius.circular(dfBorderRadius),
+                        ),
+                      ),
+                      child: ListView.builder(
+                        itemCount: veri.length,
+                        itemBuilder: (context, index) {
+                          return RandevuCard(
+                            hastaAdi: veri[index]["patient"]["name"],
+                            doktorAdi: veri[index]["doctor"]["name"],
+                            randevuTarihi: veri[index]["start_at"],
+                            randevuSaati: veri[index]["start_at"],
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              );
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }),
     );
   }
 }
