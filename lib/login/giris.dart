@@ -1,6 +1,6 @@
 import 'package:dental_asistanim/const.dart';
-import 'package:dental_asistanim/custon_button.dart';
-import 'package:dental_asistanim/sizeconfig.dart';
+import 'package:dental_asistanim/etc/custon_button.dart';
+import 'package:dental_asistanim/etc/sizeconfig.dart';
 import 'package:faded_widget/faded_widget.dart';
 import 'package:fan_carousel_image_slider/fan_carousel_image_slider.dart';
 import 'package:flutter/material.dart';

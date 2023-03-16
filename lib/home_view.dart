@@ -1,14 +1,14 @@
-import 'package:dental_asistanim/SelectionModel.dart';
+import 'package:dental_asistanim/etc/SelectionModel.dart';
 import 'package:dental_asistanim/const.dart';
-import 'package:dental_asistanim/hastaekle.dart';
-import 'package:dental_asistanim/randevuekle.dart';
-import 'package:dental_asistanim/selectionCard.dart';
-import 'package:dental_asistanim/yaklasan_randevu.dart';
+import 'package:dental_asistanim/hasta/hastasayfa/hastaekle.dart';
+import 'package:dental_asistanim/randevu/randevuekle.dart';
+import 'package:dental_asistanim/etc/selectionCard.dart';
+import 'package:dental_asistanim/randevu/yaklasan_randevu.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'config.dart';
-import 'hastasayfa.dart';
+import 'hasta/hastasayfa/hastasayfa.dart';
 
 class HomeView extends StatefulWidget {
   late String name;

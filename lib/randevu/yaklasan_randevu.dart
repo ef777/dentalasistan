@@ -1,16 +1,16 @@
 import 'dart:convert';
 
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
-import 'package:dental_asistanim/randevumodel.dart';
-import 'package:dental_asistanim/sizeconfig.dart';
+import 'package:dental_asistanim/models/randevumodel.dart';
+import 'package:dental_asistanim/etc/sizeconfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'config.dart';
-import 'const.dart';
+import '../config.dart';
+import '../const.dart';
 import 'package:intl/intl.dart';
 
-import 'custon_button.dart';
+import '../etc/custon_button.dart';
 
 class YaklasanRandevu extends StatefulWidget {
   const YaklasanRandevu({super.key});

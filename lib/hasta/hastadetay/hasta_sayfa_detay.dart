@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dental_asistanim/const.dart';
-import 'package:dental_asistanim/hastaDetay/tedavi_ekle.dart';
-import 'package:dental_asistanim/hastaDetay/tedaviler_sayfa.dart';
-import 'package:dental_asistanim/sizeconfig.dart';
+import 'package:dental_asistanim/hasta/hastadetay/tedavi_ekle.dart';
+import 'package:dental_asistanim/hasta/hastadetay/tedaviler_sayfa.dart';
+import 'package:dental_asistanim/etc/sizeconfig.dart';
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:http/http.dart' as http;
 
-import '../config.dart';
+import '../../config.dart';
 import 'cari_hareketler_sayfa.dart';
 
 class HastaDetaySayfa extends StatefulWidget {

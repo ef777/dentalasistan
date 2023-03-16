@@ -1,8 +1,8 @@
-import 'package:dental_asistanim/custon_button.dart';
+import 'package:dental_asistanim/etc/custon_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../const.dart';
+import '../../const.dart';
 
 class TedaviEkle extends StatefulWidget {
   const TedaviEkle({super.key});

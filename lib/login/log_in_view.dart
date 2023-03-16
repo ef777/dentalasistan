@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 
-import 'package:dental_asistanim/sizeconfig.dart';
+import 'package:dental_asistanim/etc/sizeconfig.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'config.dart';
-import 'custon_button.dart';
-import 'home_view.dart';
+import '../config.dart';
+import '../etc/custon_button.dart';
+import '../home_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);

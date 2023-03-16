@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 import 'SelectionModel.dart';
-import 'const.dart';
+import '../const.dart';
 import 'custon_button.dart';
 
 class SelectionCard extends StatelessWidget {

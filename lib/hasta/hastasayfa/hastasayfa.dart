@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:dental_asistanim/const.dart';
-import 'package:dental_asistanim/hastaDetay/hasta_sayfa_detay.dart';
-import 'package:dental_asistanim/sizeconfig.dart';
+import 'package:dental_asistanim/hasta/hastadetay/hasta_sayfa_detay.dart';
+import 'package:dental_asistanim/etc/sizeconfig.dart';
 import 'package:http/http.dart' as http;
-import 'package:dental_asistanim/randevutarih.dart';
+import 'package:dental_asistanim/randevu/randevutarih.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'config.dart';
+import '../../config.dart';
 
 class HastaSayfa extends StatefulWidget {
   @override

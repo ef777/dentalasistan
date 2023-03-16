@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:dental_asistanim/const.dart';
-import 'package:dental_asistanim/randevutarih.dart';
+import 'package:dental_asistanim/randevu/randevutarih.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:dental_asistanim/hastamodel.dart';
+import 'package:dental_asistanim/models/hastamodel.dart';
 
-import 'config.dart';
-import 'custon_button.dart';
+import '../config.dart';
+import '../etc/custon_button.dart';
 
 class doktorgetmodel {
   dynamic? id;

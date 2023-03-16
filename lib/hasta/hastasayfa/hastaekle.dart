@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:dental_asistanim/home_view.dart';
-import 'package:dental_asistanim/randevuekle.dart';
+import 'package:dental_asistanim/randevu/randevuekle.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:dental_asistanim/const.dart';
-import 'package:dental_asistanim/custon_button.dart';
-import 'package:dental_asistanim/randevutarih.dart';
+import 'package:dental_asistanim/etc/custon_button.dart';
+import 'package:dental_asistanim/randevu/randevutarih.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'config.dart';
+import '../../config.dart';
 
 class Hastaekle extends StatefulWidget {
   @override
