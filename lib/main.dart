@@ -35,7 +35,7 @@ Future<void> main() async {
           alignment: Alignment.center,
           child: AnimatedSplashScreen(
               duration: 500,
-              splash: new Image.asset('/assets/indir.png'),
+              splash: new Image.asset('assets/indir.png'),
               nextScreen: path(),
               splashTransition: SplashTransition.fadeTransition,
               pageTransitionType: PageTransitionType.rightToLeftWithFade,
