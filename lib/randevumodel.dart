@@ -32,7 +32,7 @@ class Randevusayfa {
 
         Randevusayfa resp = (Randevusayfa.fromJson(responseData));
         var sonuc = resp.data.data;
-
+        //print(response.body);
         print("başarılı");
         return sonuc;
       } else {

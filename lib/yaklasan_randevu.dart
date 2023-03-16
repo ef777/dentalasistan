@@ -119,6 +119,14 @@ class _YaklasanRandevuState extends State<YaklasanRandevu> {
                       child: ListView.builder(
                         itemCount: veri.length,
                         itemBuilder: (context, index) {
+                          if (veri[index]
+                                  .startAt
+                                  .isBefore(startDate ?? DateTime.now()) &&
+                              veri[index].startAt.isBefore(endDate ??
+                                  DateTime.now()
+                                      .add(const Duration(days: 1)))) {
+                            return const SizedBox.shrink();
+                          }
                           return RandevuCard(
                             hastaAdi: veri[index].patient?.name == null
                                 ? "Hasta adı yok!"

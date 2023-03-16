@@ -225,7 +225,7 @@ class HastaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        Get.to(HastaDetaySayfa());
+        Get.to(HastaDetaySayfa(id: item["id"].toString()));
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
