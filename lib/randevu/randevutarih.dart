@@ -1,4 +1,4 @@
-/* import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AppointmentPage extends StatefulWidget {
@@ -8,6 +8,9 @@ class AppointmentPage extends StatefulWidget {
 
 class _AppointmentPageState extends State<AppointmentPage> {
   DateTime _selectedDate = DateTime.now();
+  DateTime _selectedStartDate = DateTime.now();
+  DateTime _selectedEndDate = DateTime.now();
+
   List<String> _availableHours = [
     '9:00 AM',
     '10:00 AM',
@@ -51,14 +54,31 @@ class _AppointmentPageState extends State<AppointmentPage> {
             TextButton(
               child: Text('Onayla'),
               onPressed: () {
-                //TODO: Handle adding appointment
-                Navigator.of(context).pop();
+                Navigator.pop(
+                    context, _selectedDate); // Geri döndürülecek değeri belirle
               },
             ),
           ],
         );
       },
     );
+  }
+
+  Future<void> _selectDateRange() async {
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 365)),
+      helpText: 'Lütfen tatil tarih aralığını seçin:',
+      cancelText: 'İptal',
+      confirmText: 'Tamam',
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedStartDate = picked.start;
+        _selectedEndDate = picked.end;
+      });
+    }
   }
 
   @override
@@ -98,17 +118,23 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    final DateTime? picked = await showDatePicker(
+                    final Future<void> picked = _selectDateRange();
+
+                    /*     final DateTime? picked = await showDatePicker(
+                      //  initialEntryMode
                       context: context,
+
+                      selectableDayPredicate: (DateTime val) =>
+                          val.weekday == 5 || val.weekday == 6 ? false : true,
                       initialDate: _selectedDate,
                       firstDate: DateTime.now(),
                       lastDate: DateTime(DateTime.now().year + 1),
-                    );
-                    if (picked != null && picked != _selectedDate) {
+                    ); */
+                    /*  if (picked != null && picked != _selectedDate) {
                       setState(() {
                         _selectedDate = picked;
                       });
-                    }
+                    } */
                   },
                   child: Text(
                     DateFormat.yMMMMEEEEd().format(_selectedDate),
@@ -205,4 +231,3 @@ class _AppointmentPageState extends State<AppointmentPage> {
     );
   }
 }
- */

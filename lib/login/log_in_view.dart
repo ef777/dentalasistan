@@ -20,11 +20,12 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   @override
+  bool isLoading = false;
+
   Widget build(BuildContext context) {
     TextEditingController emailText = TextEditingController();
     TextEditingController passwordText = TextEditingController();
     var size = MediaQuery.of(context).size;
-    bool isLoading = false;
     emailText.text = "ile@dentalasistan.com";
     passwordText.text = "123123";
     girisvesubeid() async {
@@ -60,6 +61,9 @@ class _LoginViewState extends State<LoginView> {
     }
 
     loginol(mail, sifre) async {
+      setState(() {
+        isLoading = true;
+      });
       try {
         var url = Uri.parse('https://demo.dentalasistanim.com/api/auth/login');
         var response = await http.post(
@@ -86,6 +90,10 @@ class _LoginViewState extends State<LoginView> {
         }
       } catch (e) {
         print(e);
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
       }
     }
 
@@ -179,14 +187,9 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   CustomButton(
                     onPressed: (() async {
-                      setState(() {
-                        isLoading = true;
-                      });
                       var son =
                           await loginol(emailText.text, passwordText.text);
-                      setState(() {
-                        isLoading = false;
-                      });
+
                       if (son == true) {
                         Get.snackbar('Başarılı', 'Giriş Başarılı');
                         Get.to(() => HomeView(

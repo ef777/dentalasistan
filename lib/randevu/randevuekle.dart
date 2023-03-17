@@ -270,30 +270,9 @@ class _RandevuEkleState extends State<RandevuEkle> {
     }
   }
 
-  tarihsec() {
-    showCustomDateRangePicker(
-      primaryColor: solidColor,
-      backgroundColor: solidColor,
-      context,
-      dismissible: true,
-      minimumDate: DateTime.now().subtract(const Duration(days: 30)),
-      maximumDate: DateTime.now().add(const Duration(days: 30)),
-      endDate: endDate,
-      startDate: startDate,
-      onApplyClick: (start, end) {
-        setState(() {
-          endDate = end;
-          startDate = start;
-        });
-      },
-      onCancelClick: () {
-        setState(() {
-          endDate = null;
-          startDate = null;
-        });
-      },
-    );
-    return true;
+  tarihSec() async {
+    var result = await Get.to(AppointmentPage());
+    return result;
   }
 
   String _searchText = "";
@@ -572,7 +551,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
                           height: 48,
                           onPressed: () async {
                             if (endDate.isNull && startDate.isNull) {
-                              tarihsec();
+                              tarihSec();
                             }
                             if (!endDate.isNull && !startDate.isNull) {
                               var son = await randevuekle(
@@ -590,7 +569,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
                             } else {
                               Get.snackbar('Tarih!', 'Tarih Eklenmedi!');
 
-                              tarihsec();
+                              tarihSec();
                             }
                           },
                           title: "Kaydet",

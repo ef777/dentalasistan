@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen>
         ),
       ),
     );
-
+/* 
     Scaffold(
       body: AnimatedBuilder(
         animation: _animationController,
@@ -209,9 +209,10 @@ class _LoginScreenState extends State<LoginScreen>
         },
       ),
     );
+  */
   }
 }
-
+/* 
 class Carousel extends StatefulWidget {
   final List<Widget> children;
   final List<String> texts;
@@ -391,3 +392,4 @@ class _CarouselState extends State<Carousel> {
     );
   }
 }
+ */

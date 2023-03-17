@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:dental_asistanim/config.dart';
 import 'package:dental_asistanim/etc/custon_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../../const.dart';
 
@@ -9,6 +13,40 @@ class TedaviEkle extends StatefulWidget {
 
   @override
   State<TedaviEkle> createState() => _TedaviEkleState();
+}
+// price id çek
+// treatment id çek
+// toothNumbers ??
+// treatmentPlanningId ??
+// canals ??
+
+Future<bool> tedaviekle() async {
+  try {
+    var url = Uri.parse(
+        ' https://demo.dentalasistanim.com/api/patients/13785/examinations?doctorId=47&priceListId=36&treatmentId=307&toothNumbers[]=18&treatmentPlanningId=1&canals[]=');
+    var response = await http.post(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${Config.token}'
+      },
+    );
+    String responseString = response.body;
+    Map<String, dynamic> responseData = json.decode(responseString);
+
+    if (response.statusCode == 200) {
+      print("başarılı");
+      print(responseData);
+      return true;
+    } else {
+      print(responseData);
+      print("başarısız");
+      return false;
+    }
+  } catch (e) {
+    print("hataa");
+    return false;
+  }
 }
 
 class _TedaviEkleState extends State<TedaviEkle> {

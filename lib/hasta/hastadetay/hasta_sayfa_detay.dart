@@ -128,6 +128,7 @@ class _HastaDetaySayfaState extends State<HastaDetaySayfa> {
     }
   }
 
+// https://demo.dentalasistanim.com/api/patients/2866/examinations?planningId=4
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
