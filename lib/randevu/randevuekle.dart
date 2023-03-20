@@ -165,10 +165,11 @@ class _RandevuEkleState extends State<RandevuEkle> {
   doktorgetmodel? _selectedHekim;
   String _selectedRandevuDurumu = "Seçiniz";
   String _randevuNotu = "";
-
+  List secilitarih = [];
   List<HastaModel> hastaListesi = [];
   DateTime? startDate;
   DateTime? endDate;
+
   List<randevugrupmodel> randevuTurleri = [];
 
   List<String> randevuDurumu = [
@@ -238,7 +239,34 @@ class _RandevuEkleState extends State<RandevuEkle> {
     }
   }
 
-  randevuekle(hastaid, randevutur, doktor, not, durum) async {
+  randevuekle(hastaid, randevutur, doktor, not, durum, tarih) async {
+    TimeOfDay ilksaat = tarih[0];
+    var ilksaatsaat = ilksaat.hour.toString();
+    var ilksaatdakika = ilksaat.minute.toString();
+    print("ilk saat + ${ilksaat}");
+    TimeOfDay ikincisaat = tarih[1];
+    var ikincisaatsaat = ikincisaat.hour.toString();
+    var ikincisaatdakika = ikincisaat.minute.toString();
+    print("ikinci saat ${ikincisaat}");
+    DateTime date = tarih[2];
+
+    print("gün ${date}");
+    var gun = date.day.toString();
+    var yil = date.year.toString();
+    var ay = date.month.toString();
+    if (int.parse(ay) < 10) {
+      ay = "0${ay}";
+    }
+    print("gün ${gun}");
+    print("yıl ${yil}");
+    print("ay ${ay}");
+
+    /*   var formatedgun = tarih[3];
+    print("formatedgun ${formatedgun}"); */
+    print("giden ilk date = ");
+    print("${yil}-${ay}-${gun} ${ilksaatsaat}:${ilksaatdakika}");
+    print("giden ikinci date = ");
+    print("${yil}-${ay}-${gun} ${ikincisaatsaat}:${ikincisaatdakika}");
     try {
       var url = Uri.parse('https://demo.dentalasistanim.com/api/appointments');
       var response = await http.post(url, headers: {
@@ -249,8 +277,9 @@ class _RandevuEkleState extends State<RandevuEkle> {
         "patient_id": "${hastaid.toString()}",
         "doctor_id": "${doktor.toString()}",
         "treatment_group_id": "${randevutur.toString()}",
-        "start_at": "2023-04-17 10:00",
-        "end_at": "2024-10-01 10:00",
+        /*  "note": "${not.toString()}", */
+        "start_at": "${yil}-${ay}-${gun} ${ilksaatsaat}:${ilksaatdakika}",
+        "end_at": "${yil}-${ay}-${gun} ${ikincisaatsaat}:${ikincisaatdakika}",
       });
       String responseString = response.body;
       Map<String, dynamic> responseData = json.decode(responseString);
@@ -262,10 +291,47 @@ class _RandevuEkleState extends State<RandevuEkle> {
       } else {
         print(responseData);
         print("başarısız");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Hata"),
+              content: Text("${responseData["message"]}"),
+              actions: [
+                TextButton(
+                  child: Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+
         return false;
       }
     } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Hata"),
+            content: Text("${e}"),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+
       print("hataa");
+
       return false;
     }
   }
@@ -316,6 +382,41 @@ class _RandevuEkleState extends State<RandevuEkle> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: sfColor,
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: CustomButton(
+            height: 48,
+            onPressed: () async {
+              print("secili tarih bu" + secilitarih.toString());
+              if (secilitarih.isEmpty) {
+                print("tarih boş");
+                secilitarih = await tarihSec();
+                print("işte seçilen tarihler");
+                print(secilitarih);
+              }
+              if (secilitarih.isNotEmpty) {
+                print("tarih dolu ve gönderiliyor istek");
+                var son = await randevuekle(
+                  _selectedHasta!.id,
+                  _selectedRandevuTuru!.id,
+                  _selectedHekim!.id,
+                  "not",
+                  _selectedRandevuDurumu,
+                  secilitarih,
+                );
+                if (son) {
+                  Get.snackbar('Tamam!', 'Randevu kaydedildi!');
+                  Navigator.pop(context);
+                } else {
+                  Get.snackbar('Hata!', 'Randevu kaydedilmedi!');
+                  print("hata ${son.toString()}");
+                  secilitarih.clear();
+                }
+              }
+            },
+            title: "Kaydet",
+          ),
+        ),
         appBar: AppBar(
           elevation: 0,
           title: Text(
@@ -333,7 +434,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
               padding: const EdgeInsets.only(left: 24, bottom: 8),
               child: Image.asset(
                 "assets/image2.png",
-                height: 200,
+                height: 100,
               ),
             ),
             Expanded(
@@ -360,66 +461,107 @@ class _RandevuEkleState extends State<RandevuEkle> {
                   child: ListView(
                     children: <Widget>[
                       const SizedBox(height: 10),
-                      Column(
-                        children: <Widget>[
-                          TextField(
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.search),
-                              hintText: 'Hasta ismi...',
+                      TextButton(
+                          style: ButtonStyle(
+                            overlayColor:
+                                MaterialStateProperty.resolveWith<Color?>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.hovered)) {
+                                  return Colors.transparent;
+                                } else {
+                                  return null;
+                                }
+                              },
                             ),
-                            onChanged: (text) {
-                              setState(() {
-                                _searchText = text;
-                                _searchResult = hastaListesi
-                                    .where((hasta) => hasta.name
-                                        .toLowerCase()
-                                        .contains(_searchText.toLowerCase()))
-                                    .toList();
-                              });
-                            },
-                          ),
-                          SizedBox(
-                              height:
-                                  10), // arama kutusu ile seçici arasına boşluk ekler
-                          DropdownButtonFormField<HastaModel>(
-                            value: _selectedHasta,
-                            items: _searchText.isEmpty
-                                ? hastaListesi.map((HastaModel value) {
-                                    return DropdownMenuItem<HastaModel>(
-                                      value: value,
-                                      child: Text(value.name),
-                                    );
-                                  }).toList()
-                                : _searchResult.map((HastaModel value) {
-                                    return DropdownMenuItem<HastaModel>(
-                                      value: value,
-                                      child: Text(value.name),
-                                    );
-                                  }).toList(),
-                            decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: solidColor),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
-                              ),
-                              labelText: "Hasta Seçiniz",
-                              filled: true,
-                              fillColor: Colors.white,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 16,
+                                side: BorderSide(color: solidColor),
                               ),
                             ),
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedHasta = value;
-                              });
-                            },
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(Colors.white),
+                            padding:
+                                MaterialStateProperty.all<EdgeInsetsGeometry>(
+                              const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 16),
+                            ),
                           ),
-                        ],
-                      ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(_selectedHasta?.name ?? "Hasta Seçiniz"),
+                              Icon(Icons.arrow_drop_down),
+                            ],
+                          ),
+                          onPressed: () {
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return StatefulBuilder(builder:
+                                      (BuildContext context,
+                                          StateSetter setState) {
+                                    return Container(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextField(
+                                            decoration: InputDecoration(
+                                              prefixIcon: Icon(Icons.search),
+                                              hintText: 'Hasta ismi...',
+                                            ),
+                                            onChanged: (text) {
+                                              print(
+                                                  'Search text: $_searchText');
+                                              print(
+                                                  'Search result: $_searchResult');
+
+                                              setState(() {
+                                                _searchText = text;
+                                                _searchResult = hastaListesi
+                                                    .where((hasta) => hasta.name
+                                                        .toLowerCase()
+                                                        .contains(_searchText
+                                                            .toLowerCase()))
+                                                    .toList();
+                                              });
+                                            },
+                                          ),
+                                          SizedBox(height: 10),
+                                          Expanded(
+                                            child: ListView.builder(
+                                              shrinkWrap: true,
+                                              itemCount: _searchText.isEmpty
+                                                  ? hastaListesi.length
+                                                  : _searchResult.length,
+                                              itemBuilder: (context, index) {
+                                                final HastaModel hasta =
+                                                    _searchText.isEmpty
+                                                        ? hastaListesi[index]
+                                                        : _searchResult[index];
+
+                                                return ListTile(
+                                                  title: Text(hasta.name),
+                                                  selected:
+                                                      _selectedHasta == hasta,
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _selectedHasta = hasta;
+                                                    });
+                                                    navigator!.pop();
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  });
+                                });
+                          }),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<randevugrupmodel>(
                         value: _selectedRandevuTuru,
@@ -545,36 +687,6 @@ class _RandevuEkleState extends State<RandevuEkle> {
                         },
                       ),
                       SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: CustomButton(
-                          height: 48,
-                          onPressed: () async {
-                            if (endDate.isNull && startDate.isNull) {
-                              tarihSec();
-                            }
-                            if (!endDate.isNull && !startDate.isNull) {
-                              var son = await randevuekle(
-                                _selectedHasta!.id,
-                                _selectedRandevuTuru!.id,
-                                _selectedHekim!.id,
-                                "not",
-                                _selectedRandevuDurumu,
-                              );
-                              if (son == true) {
-                                Get.snackbar('Başarılı', 'Hasta Eklendi');
-                              } else {
-                                Get.snackbar('Başarısız', 'Hasta Eklenmedi!');
-                              }
-                            } else {
-                              Get.snackbar('Tarih!', 'Tarih Eklenmedi!');
-
-                              tarihSec();
-                            }
-                          },
-                          title: "Kaydet",
-                        ),
-                      )
                     ],
                   ),
                 ),

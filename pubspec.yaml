@@ -38,6 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   http: ^0.13.4
   get: ^4.6.1
+  flutter_localization: any
   onesignal_flutter: ^3.4.1
   fluttericon: ^2.0.0
   font_awesome_flutter: ^10.2.1
@@ -60,14 +61,12 @@ dependencies:
   flutter_rating_bar: ^4.0.0
   faded_widget: ^2.0.0
   table_calendar: ^3.0.0
-  custom_date_range_picker: ^1.0.7
+  custom_date_range_picker: any
   fan_carousel_image_slider: ^0.1.2
   salomon_bottom_bar: ^3.3.1
   cupertino_tabbar: ^2.0.0
   animated_segmented_tab_control: ^1.0.1
-
-
-
+  flutter_rounded_date_picker: ^3.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

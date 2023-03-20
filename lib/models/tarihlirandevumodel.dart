@@ -1,22 +1,26 @@
 // To parse this JSON data, do
 //
-//     final randevusayfa = randevusayfaFromJson(jsonString);
-import 'package:http/http.dart' as http;
+//     final tarihliRandevu = tarihliRandevuFromJson(jsonString);
 
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import '../config.dart';
 
-class Randevusayfa {
-  Randevusayfa({
+class TarihliRandevu {
+  TarihliRandevu({
     required this.success,
     required this.message,
     required this.data,
   });
 
-  static Future<List<Datum>> randevugetir() async {
+  final bool success;
+  final String message;
+  final List<Datum2> data;
+  static Future<List<Datum2>> tarihlirandevugetir(tarih) async {
     try {
-      var url = Uri.parse('https://demo.dentalasistanim.com/api/appointments');
+      var url = Uri.parse(
+          'https://demo.dentalasistanim.com/api/appointments-by-date/${tarih}');
       var response = await http.get(
         url,
         headers: {
@@ -27,17 +31,21 @@ class Randevusayfa {
       );
 
       if (response.statusCode == 200) {
+        print("tarihli fonk başarılı");
         String responseString = response.body;
 
         Map<String, dynamic> responseData = json.decode(responseString);
+        print("tarihli fonk başarılı2");
 
-        Randevusayfa resp = (Randevusayfa.fromJson(responseData));
-        var sonuc = resp.data.data;
-        //print(response.body);
+        TarihliRandevu resp = (TarihliRandevu.fromJson(responseData));
+        print("tarihli fonk başarılı3");
+
+        var sonuc = resp.data;
+        print(response.body);
         print("başarılı");
         return sonuc;
       } else {
-        print("başarısız");
+        print("tarhili fonk çek başarısız");
         print(response);
         return [];
       }
@@ -47,72 +55,26 @@ class Randevusayfa {
     }
   }
 
-  final bool success;
-  final String message;
-  final Data data;
+  factory TarihliRandevu.fromRawJson(String str) =>
+      TarihliRandevu.fromJson(json.decode(str));
 
-  factory Randevusayfa.fromRawJson(String str) =>
-      Randevusayfa.fromJson(json.decode(str));
+  String toRawJson() => json.encode(toJson());
 
-  factory Randevusayfa.fromJson(Map<String, dynamic> json) => Randevusayfa(
+  factory TarihliRandevu.fromJson(Map<String, dynamic> json) => TarihliRandevu(
         success: json["success"],
         message: json["message"],
-        data: Data.fromJson(json["data"]),
+        data: List<Datum2>.from(json["data"].map((x) => Datum2.fromJson(x))),
       );
+
+  Map<String, dynamic> toJson() => {
+        "success": success,
+        "message": message,
+        "data": List<dynamic>.from(data.map((x) => x.toJson())),
+      };
 }
 
-class Data {
-  Data({
-    required this.currentPage,
-    required this.data,
-    required this.firstPageUrl,
-    required this.from,
-    required this.lastPage,
-    required this.lastPageUrl,
-    required this.links,
-    this.nextPageUrl,
-    required this.path,
-    required this.perPage,
-    this.prevPageUrl,
-    required this.to,
-    required this.total,
-  });
-
-  final int currentPage;
-  final List<Datum> data;
-  final String firstPageUrl;
-  final int from;
-  final int lastPage;
-  final String lastPageUrl;
-  final List<Link> links;
-  final dynamic nextPageUrl;
-  final String? path;
-  final int? perPage;
-  final dynamic? prevPageUrl;
-  final int? to;
-  final int? total;
-
-  factory Data.fromRawJson(String str) => Data.fromJson(json.decode(str));
-
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        currentPage: json["current_page"],
-        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
-        firstPageUrl: json["first_page_url"],
-        from: json["from"],
-        lastPage: json["last_page"],
-        lastPageUrl: json["last_page_url"],
-        links: List<Link>.from(json["links"].map((x) => Link.fromJson(x))),
-        nextPageUrl: json["next_page_url"],
-        path: json["path"],
-        perPage: json["per_page"],
-        prevPageUrl: json["prev_page_url"],
-        to: json["to"],
-        total: json["total"],
-      );
-}
-
-class Datum {
-  Datum({
+class Datum2 {
+  Datum2({
     required this.id,
     required this.branchId,
     required this.appointmentFor,
@@ -125,7 +87,7 @@ class Datum {
     required this.createdBy,
     required this.createdAt,
     required this.updatedAt,
-    this.patient,
+    required this.patient,
     required this.doctor,
   });
 
@@ -141,12 +103,14 @@ class Datum {
   final int createdBy;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final Patient? patient;
+  final Patient patient;
   final Doctor doctor;
 
-  factory Datum.fromRawJson(String str) => Datum.fromJson(json.decode(str));
+  factory Datum2.fromRawJson(String str) => Datum2.fromJson(json.decode(str));
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  String toRawJson() => json.encode(toJson());
+
+  factory Datum2.fromJson(Map<String, dynamic> json) => Datum2(
         id: json["id"],
         branchId: json["branch_id"],
         appointmentFor: json["appointment_for"],
@@ -159,48 +123,66 @@ class Datum {
         createdBy: json["created_by"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        patient:
-            json["patient"] == null ? null : Patient.fromJson(json["patient"]),
+        patient: Patient.fromJson(json["patient"]),
         doctor: Doctor.fromJson(json["doctor"]),
       );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "branch_id": branchId,
+        "appointment_for": appointmentFor,
+        "appointment_with": appointmentWith,
+        "treatment_group_id": treatmentGroupId,
+        "start_at": startAt.toIso8601String(),
+        "end_at": endAt.toIso8601String(),
+        "note": note,
+        "status": status,
+        "created_by": createdBy,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "patient": patient.toJson(),
+        "doctor": doctor.toJson(),
+      };
 }
 
 class Doctor {
   Doctor({
     required this.id,
     required this.roleId,
-    this.tenantId,
+    required this.tenantId,
     required this.name,
     required this.email,
     required this.phone,
-    this.commissionRate,
+    required this.commissionRate,
     this.emailVerifiedAt,
     this.avatar,
     required this.status,
     this.openingTime,
     this.closingTime,
-    this.createdAt,
+    required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
   });
 
   final int id;
   final int roleId;
-  final int? tenantId;
+  final int tenantId;
   final String name;
   final String email;
   final String phone;
-  final int? commissionRate;
+  final int commissionRate;
   final dynamic emailVerifiedAt;
   final dynamic avatar;
   final int status;
   final dynamic openingTime;
   final dynamic closingTime;
-  final DateTime? createdAt;
+  final DateTime createdAt;
   final DateTime updatedAt;
   final dynamic deletedAt;
 
   factory Doctor.fromRawJson(String str) => Doctor.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
 
   factory Doctor.fromJson(Map<String, dynamic> json) => Doctor(
         id: json["id"],
@@ -215,12 +197,28 @@ class Doctor {
         status: json["status"],
         openingTime: json["opening_time"],
         closingTime: json["closing_time"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
+        createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         deletedAt: json["deleted_at"],
       );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "role_id": roleId,
+        "tenant_id": tenantId,
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "commission_rate": commissionRate,
+        "email_verified_at": emailVerifiedAt,
+        "avatar": avatar,
+        "status": status,
+        "opening_time": openingTime,
+        "closing_time": closingTime,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "deleted_at": deletedAt,
+      };
 }
 
 class Patient {
@@ -258,6 +256,8 @@ class Patient {
 
   factory Patient.fromRawJson(String str) => Patient.fromJson(json.decode(str));
 
+  String toRawJson() => json.encode(toJson());
+
   factory Patient.fromJson(Map<String, dynamic> json) => Patient(
         id: json["id"],
         tenantId: json["tenant_id"],
@@ -274,24 +274,21 @@ class Patient {
         deletedAt: json["deleted_at"],
         avatarPath: json["avatar_path"],
       );
-}
 
-class Link {
-  Link({
-    this.url,
-    required this.label,
-    required this.active,
-  });
-
-  final String? url;
-  final String label;
-  final bool active;
-
-  factory Link.fromRawJson(String str) => Link.fromJson(json.decode(str));
-
-  factory Link.fromJson(Map<String, dynamic> json) => Link(
-        url: json["url"],
-        label: json["label"],
-        active: json["active"],
-      );
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "tenant_id": tenantId,
+        "doctor_id": doctorId,
+        "avatar": avatar,
+        "document_no": documentNo,
+        "identity_number": identityNumber,
+        "nationality": nationality,
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "deleted_at": deletedAt,
+        "avatar_path": avatarPath,
+      };
 }

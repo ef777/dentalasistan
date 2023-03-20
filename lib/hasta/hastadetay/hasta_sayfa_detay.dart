@@ -6,6 +6,7 @@ import 'package:dental_asistanim/hasta/hastadetay/tedavi_ekle.dart';
 import 'package:dental_asistanim/hasta/hastadetay/tedaviler_sayfa.dart';
 import 'package:dental_asistanim/etc/sizeconfig.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_utils/get_utils.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:http/http.dart' as http;
 
@@ -150,9 +151,9 @@ class _HastaDetaySayfaState extends State<HastaDetaySayfa> {
                   child: Container(
                     color: solidColor,
                     child: Padding(
-                      padding: const EdgeInsets.all(32.0),
+                      padding: const EdgeInsets.all(28.0),
                       child: Container(
-                        width: SizeConfig.safeBlockVertical * 36,
+                        width: SizeConfig.safeBlockVertical * 40,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           color: Colors.white,
@@ -188,7 +189,7 @@ class _HastaDetaySayfaState extends State<HastaDetaySayfa> {
                                       ?.copyWith(fontWeight: FontWeight.w600),
                                 ),
                                 Text(
-                                  "Telefon : ${hasta.phone}",
+                                  "Nu : ${hasta.phone}",
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
@@ -197,20 +198,11 @@ class _HastaDetaySayfaState extends State<HastaDetaySayfa> {
                               ],
                             ),
                             CircleAvatar(
-                              backgroundColor: Colors.blue,
-                              backgroundImage: CachedNetworkImageProvider(hasta
-                                      .avatar ??
-                                  "https://www.w3schools.com/howto/img_avatar.png"),
+                              backgroundImage: CachedNetworkImageProvider((hasta
+                                      .avatar.isEmpty)
+                                  ? ("https://www.w3schools.com/howto/img_avatar.png")
+                                  : hasta.avatar),
                               radius: 48.0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: solidColor,
-                                    width: 3.0,
-                                  ),
-                                ),
-                              ),
                             ),
                           ],
                         ),
@@ -221,8 +213,9 @@ class _HastaDetaySayfaState extends State<HastaDetaySayfa> {
               ),
             ),
             body: Center(
+                child: SingleChildScrollView(
               child: _widgetOptions.elementAt(_selectedIndex),
-            ),
+            )),
             bottomNavigationBar: SalomonBottomBar(
               currentIndex: _selectedIndex,
               onTap: (i) => setState(() => _selectedIndex = i),
@@ -254,7 +247,7 @@ class _HastaDetaySayfaState extends State<HastaDetaySayfa> {
           );
         } else {
           return const Scaffold(
-            body: CircularProgressIndicator(),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
       },
