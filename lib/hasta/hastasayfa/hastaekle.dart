@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:dental_asistanim/home_view.dart';
 import 'package:dental_asistanim/randevu/randevuekle.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:dental_asistanim/models/doctormodel.dart';
 import 'package:dental_asistanim/const.dart';
 import 'package:dental_asistanim/etc/custon_button.dart';
 import 'package:dental_asistanim/randevu/randevutarih.dart';
@@ -18,118 +18,13 @@ class Hastaekle extends StatefulWidget {
 }
 
 class _HastaekleState extends State<Hastaekle> {
-  String _randevuNotu = "";
-  String _dosyano = "";
-  String _tcno = "";
   String _adsoyad = "";
-  String _anneadi = "";
-  String _babaadi = "";
-  String _dogumtarihi = "";
-  String _cinsiyet = "";
-  List<String> _cinsiyetliste = [
-    'Seçiniz',
-    'Erkek',
-    'Kadın',
-  ];
 
-  String _kangrubu = 'Seçiniz';
-  List<String> _kangrubuliste = [
-    'Seçiniz',
-    'A+',
-    'B+',
-    'AB+',
-    '0+',
-    'A-',
-    'B-',
-    'AB-',
-    '0-',
-  ];
-  String _yuzsekli = "Seçiniz";
-  List<String> _yuzsekliliste = [
-    'Seçiniz',
-    'Kare',
-    'Dikdörtgen',
-    'Oval',
-    'Üçgen'
-  ];
   String _telefonno = "";
 
-  String _eposta = "";
-  String _adres = "";
-  String _ulke = "";
-  String _il = "";
-  String _ilce = "";
-  String _indirim = "";
-  String _referans = "";
   String _onemlinot = "";
-  String _hastaturu = "Seçiniz";
-  List<String> _hastaturuliste = [
-    'Seçiniz',
-    'Aktif',
-    'Potansiyel',
-    'Pasif',
-  ];
-  String _hekim = "";
-  List<String> _hekimliste = [
-    'Seçiniz',
-    'Dr. Ali',
-  ];
-  List<String> _hekimlistedeger = [
-    'Seçiniz',
-  ];
 
-  String _herhangitedavi = "";
-  String _ilackullan = "";
-  String _hastalik = "";
-  String _ilacalerji = "";
-  String _hamilelidusuk = "";
-  String _kotualiskanlik = "";
-  String _tehlikeliilackullanilan = "";
-  String _basveboyunradyoterapi = "";
-  List<String> _basveboyunradyoterapiliste = [
-    'Seçiniz',
-    'Evet',
-    'Hayır',
-  ];
-
-  String _kanamauzun = "";
-  List<String> _kanamauzunliste = [
-    'Seçiniz',
-    'Evet',
-    'Hayır',
-  ];
-  String _herhangibirtibbisorun = "";
-  String _ensondishekimitedavi = "";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  doktorliste() async {
-    try {
-      var url = Uri.parse(
-          'https://demo.dentalasistanim.com/api/branches/${Config.subeid}/doctors');
-      var response = await http.get(
-        url,
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${Config.token}'
-        },
-      );
-      String responseString = response.body;
-      Map<String, dynamic> responseData = json.decode(responseString);
-
-      if (response.statusCode == 200) {
-        print("başarılı");
-        print(responseData["data"]);
-        print(responseData);
-        return responseData["data"];
-      } else {
-        print("başarısız");
-        print(responseData);
-        return "0";
-      }
-    } catch (e) {
-      print("hata");
-      print(e);
-    }
-  }
 
   hastaekle(
     ad,
@@ -165,19 +60,19 @@ class _HastaekleState extends State<Hastaekle> {
     }
   }
 
-  doktorsec(doktor) {
-    _hekimliste.clear();
-    _hekimlistedeger.clear();
-    for (var i = 0; i < doktor.length; i++) {
-      _hekimliste.add(doktor[i]["name"]);
-      _hekimlistedeger.add(doktor[i]["id"].toString());
-    }
-  }
-
+  List<doktorgetmodel> doktor = [];
+  doktorgetmodel? secilendoktor;
   @override
   void initState() {
     super.initState();
-    var doktor = doktorliste();
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final veri1 = await doktorgetmodel.doktorliste();
+      print("hastalar");
+      print(veri1);
+      setState(() {
+        doktor = veri1;
+      });
+    });
 
     print("doktor");
     print(doktor);
@@ -318,18 +213,12 @@ class _HastaekleState extends State<Hastaekle> {
                         },
                       ),
                       const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Lütfen Hekim Seçiniz';
-                          }
-                          return null;
-                        },
-                        value: _hekim.isEmpty ? null : _hekim,
-                        items: _hekimliste.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.isEmpty ? null : value,
-                            child: Text(value),
+                      DropdownButtonFormField<doktorgetmodel>(
+                        value: secilendoktor,
+                        items: doktor?.map((doktorgetmodel value) {
+                          return DropdownMenuItem<doktorgetmodel>(
+                            value: value,
+                            child: Text(value.name!),
                           );
                         }).toList(),
                         decoration: InputDecoration(
@@ -337,7 +226,7 @@ class _HastaekleState extends State<Hastaekle> {
                             borderSide: BorderSide(color: solidColor),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          labelText: "Hekim",
+                          labelText: "Hekim Seçiniz",
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
@@ -350,12 +239,7 @@ class _HastaekleState extends State<Hastaekle> {
                         ),
                         onChanged: (value) {
                           setState(() {
-                            if (value != null) {
-                              var index = _hekimliste.indexOf(value);
-                              _hekim = _hekimlistedeger[index];
-                            } else {
-                              _hekim = "";
-                            }
+                            secilendoktor = value;
                           });
                         },
                       ),
@@ -369,7 +253,7 @@ class _HastaekleState extends State<Hastaekle> {
                                   _adsoyad.toString(),
                                   _telefonno.toString(),
                                   _onemlinot.toString(),
-                                  _hekim.toString());
+                                  secilendoktor!.id.toString());
                               if (son == true) {
                                 Get.snackbar('Başarılı', 'Hasta Eklendi');
 

@@ -57,14 +57,14 @@ class _RandevuDetayState extends State<RandevuDetay> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+      /* floatingActionButton: FloatingActionButton(
         backgroundColor: solidColor,
         onPressed: () async {
           setState(() {});
         },
         tooltip: 'Aralık Seçin',
         child: const Icon(Icons.calendar_today_outlined, color: Colors.white),
-      ),
+      ), */
       backgroundColor: sfColor,
       appBar: AppBar(
         elevation: 0,
@@ -88,18 +88,6 @@ class _RandevuDetayState extends State<RandevuDetay> {
               print(veri.id.toString());
               return Column(
                 children: [
-                  Text(veri.branchId.toString()),
-                  Text(veri.doctor.toString()),
-                  Text(veri.appointmentFor.toString()),
-                  Text(veri.appointmentWith.toString()),
-                  Text(veri.treatmentGroupId.toString()),
-                  Text(veri.startAt.toString()),
-                  Text(veri.endAt.toString()),
-                  Text(veri.note.toString()),
-                  Text(veri.status.toString()),
-                  Text(veri.createdBy.toString()),
-                  Text(veri.createdAt.toString()),
-                  Text(veri.updatedAt.toString()),
                   Text(veri.patient.toString()),
                   Expanded(
                     child: Container(
@@ -120,7 +108,20 @@ class _RandevuDetayState extends State<RandevuDetay> {
                             topRight: Radius.circular(dfBorderRadius),
                           ),
                         ),
-                        child: Text(veri.id.toString())),
+                        child: Column(children: [
+                          Text(
+                            veri.id.toString(),
+                          ),
+                          Text(veri.branchId.toString()),
+                          Text(veri.doctor.toString()),
+                          Text(veri.appointmentFor.toString()),
+                          Text(veri.appointmentWith.toString()),
+                          Text(veri.treatmentGroupId.toString()),
+                          Text(veri.startAt.toString()),
+                          Text(veri.endAt.toString()),
+                          Text(veri.note.toString()),
+                          Text(veri.status.toString()),
+                        ])),
                   )
                 ],
               );

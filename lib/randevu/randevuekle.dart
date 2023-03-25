@@ -2,156 +2,18 @@ import 'dart:convert';
 
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:dental_asistanim/const.dart';
+import 'package:dental_asistanim/models/doctormodel.dart';
+import 'package:dental_asistanim/models/randevudurumlarmodel.dart';
+import 'package:dental_asistanim/models/randevudurumlarmodel.dart';
+import 'package:dental_asistanim/models/treatmantgrup.dart';
 import 'package:dental_asistanim/randevu/randevutarih.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:dental_asistanim/models/hastamodel.dart';
+import 'package:http/http.dart' as http;
 
 import '../config.dart';
 import '../etc/custon_button.dart';
-
-class doktorgetmodel {
-  dynamic? id;
-  dynamic? role_id;
-  dynamic? tenant_id;
-  dynamic? name;
-  dynamic? email;
-  dynamic? phone;
-  dynamic? commission_rate;
-  dynamic? email_verified_at;
-  dynamic? avatar;
-  dynamic? status;
-  dynamic? opening_time;
-  dynamic? closing_time;
-  dynamic? created_at;
-  dynamic? updated_at;
-  dynamic? deleted_at;
-
-  static Future<List<doktorgetmodel>> doktorliste() async {
-    try {
-      var url = Uri.parse(
-          'https://demo.dentalasistanim.com/api/branches/${Config.subeid}/doctors');
-      var response = await http.get(
-        url,
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${Config.token}'
-        },
-      );
-      String responseString = response.body;
-      Map<String, dynamic> responseData = json.decode(responseString);
-
-      if (response.statusCode == 200) {
-        print("başarılı");
-        print("doktorliste");
-        List<doktorgetmodel> docmodels = [];
-        for (var doktorgetmodeljson in responseData['data']) {
-          docmodels.add(doktorgetmodel.fromJson(doktorgetmodeljson));
-        }
-        print(responseData["data"]);
-        return docmodels;
-      } else {
-        print("başarısız");
-        print(responseData);
-        return [];
-      }
-    } catch (e) {
-      print("hata");
-      print(e);
-      return [];
-    }
-  }
-
-  doktorgetmodel(
-      {required this.id,
-      required this.name,
-      this.phone,
-      this.tenant_id,
-      this.avatar,
-      this.commission_rate,
-      this.email,
-      this.role_id,
-      this.closing_time,
-      this.opening_time,
-      this.email_verified_at,
-      this.status,
-      this.created_at,
-      this.deleted_at,
-      this.updated_at});
-  // [{id: 3, role_id: 4, tenant_id: 1, name: Doktor 1, email: doktor@onderakkaya.com, phone: 05413317717, commission_rate: 10, email_verified_at: null, avatar: null, status: 1, opening_time: null, closing_time: null, created_at: 2023-02-10T18:39:58.000000Z, updated_at: 2023-02-10T18:39:58.000000Z, deleted_at: null}]
-  factory doktorgetmodel.fromJson(Map<String, dynamic> json) {
-    return doktorgetmodel(
-      id: json['id'],
-      name: json['name'],
-      phone: json['phone'],
-      tenant_id: json['tenant_id'],
-      avatar: json['avatar'],
-      commission_rate: json['commission_rate'],
-      email: json['email'],
-      role_id: json['role_id'],
-      closing_time: json['closing_time'],
-      opening_time: json['opening_time'],
-      email_verified_at: json['email_verified_at'],
-      status: json['status'],
-      created_at: json['created_at'],
-      deleted_at: json['deleted_at'],
-      updated_at: json['updated_at'],
-    );
-  }
-}
-
-class randevugrupmodel {
-  int? id;
-  String? name;
-  String? class_name;
-  static Future<List<randevugrupmodel>> randevuturugrup() async {
-    try {
-      var url =
-          Uri.parse('https://demo.dentalasistanim.com/api/treatment-groups');
-      var response = await http.get(
-        url,
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${Config.token}'
-        },
-      );
-      String responseString = response.body;
-      Map<String, dynamic> responseData = json.decode(responseString);
-
-      if (response.statusCode == 200) {
-        print("başarılı");
-        print("randevutur");
-        print(responseData["data"]);
-        List<randevugrupmodel> grupmodels = [];
-        for (var randevugrupmodeljson in responseData['data']) {
-          grupmodels.add(randevugrupmodel.fromJson(randevugrupmodeljson));
-        }
-        print("başarısız");
-        print(responseData);
-        return grupmodels;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      return [];
-      print(e);
-    }
-  }
-
-  randevugrupmodel({
-    required this.id,
-    required this.name,
-    required this.class_name,
-  });
-  factory randevugrupmodel.fromJson(Map<String, dynamic> json) {
-    return randevugrupmodel(
-      id: json['id'],
-      name: json['name'],
-      class_name: json['class_name'],
-    );
-  }
-}
 
 class RandevuEkle extends StatefulWidget {
   @override
@@ -182,31 +44,9 @@ class _RandevuEkleState extends State<RandevuEkle> {
 
   List<doktorgetmodel> hekimler = [];
 
-  randevudurumlar() async {
-    try {
-      var url = Uri.parse(
-          'https://demo.dentalasistanim.com/api/appointment-statuses');
-      var response = await http.get(
-        url,
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${Config.token}'
-        },
-      );
-      String responseString = response.body;
-      Map<String, dynamic> responseData = json.decode(responseString);
-
-      if (response.statusCode == 200) {
-        print("başarılı");
-        print(responseData["data"]);
-        return responseData["data"];
-      } else {
-        print("başarısız");
-        print(responseData);
-      }
-    } catch (e) {
-      print(e);
-    }
+  Future<List<rdurum>> randevuduruma() async {
+    List<rdurum> rmodels = await Randevudurum.randevudurumlar();
+    return rmodels;
   }
 
   Future<List<doktorgetmodel>> doktor() async {
@@ -373,7 +213,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
       });
     });
 
-    var durum = randevudurumlar();
+    var durum = randevuduruma();
 
     Future.delayed(const Duration(seconds: 1), () {});
   }

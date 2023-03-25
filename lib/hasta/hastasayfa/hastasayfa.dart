@@ -16,11 +16,15 @@ class HastaSayfa extends StatefulWidget {
 
 class _HastaSayfaState extends State<HastaSayfa> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late List filteredVeri;
-  late List veri;
+  TextEditingController _searchController = TextEditingController();
+
+  List filteredVeri = [];
+  List veri = [];
 
   bool isSearching = false;
+
   void search(String query) {
+    print("arama başladı");
     filteredVeri = veri
         .where((element) =>
             element['name'].toLowerCase().contains(query.toLowerCase()))
@@ -58,6 +62,23 @@ class _HastaSayfaState extends State<HastaSayfa> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    setState(() {});
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      final veri1 = await hastaal();
+      print("hastalar");
+      print(veri1);
+      setState(() {
+        veri = veri1;
+        filteredVeri = veri;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
@@ -67,49 +88,10 @@ class _HastaSayfaState extends State<HastaSayfa> {
         ),
         backgroundColor: sfColor,
         appBar: AppBar(
-          title: isSearching
-              ? TextField(
-                  onChanged: (value) {
-                    search(value);
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Arama yapın',
-                    hintStyle: TextStyle(color: Colors.white),
-                  ),
-                  style: const TextStyle(color: Colors.white),
-                )
-              : const Text(''),
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
           actions: [
-            // isSearching
-            //     ? IconButton(
-            //         onPressed: () {
-            //           setState(() {
-            //             isSearching = false;
-            //             filteredVeri = veri;
-            //           });
-            //         },
-            //         // ignore: prefer_const_constructors
-            //         icon: Icon(Icons.cancel),
-            //       )
-            //     : Container(
-            //         height: 48,
-            //         width: 48,
-            //         decoration: const BoxDecoration(
-            //             shape: BoxShape.circle,
-            //             color: Color.fromARGB(72, 245, 245, 245)),
-            //         child: IconButton(
-            //           onPressed: () {
-            //             setState(() {
-            //               isSearching = true;
-            //             });
-            //           },
-            //           // ignore: prefer_const_constructors
-            //           icon: Icon(Icons.search),
-            //         ),
-            //       ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Container(
@@ -169,6 +151,10 @@ class _HastaSayfaState extends State<HastaSayfa> {
                     padding:
                         const EdgeInsets.only(left: 22, right: 22, bottom: 12),
                     child: TextField(
+                      onChanged: (value) {
+                        search(_searchController.text);
+                      },
+                      controller: _searchController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -185,27 +171,14 @@ class _HastaSayfaState extends State<HastaSayfa> {
                           )),
                     ),
                   ),
-                  FutureBuilder(
-                    future: hastaal(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Text(snapshot.error.toString());
-                      } else if (snapshot.hasData) {
-                        veri = snapshot.data as List;
-                        filteredVeri = veri;
-                        return Expanded(
-                          child: ListView.builder(
-                            itemCount: filteredVeri.length,
-                            itemBuilder: (context, index) {
-                              var item = filteredVeri[index];
-                              return Center(child: HastaCard(item: item));
-                            },
-                          ),
-                        );
-                      } else {
-                        return const CircularProgressIndicator();
-                      }
-                    },
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: filteredVeri.length,
+                      itemBuilder: (context, index) {
+                        var item = filteredVeri[index];
+                        return Center(child: HastaCard(item: item));
+                      },
+                    ),
                   )
                 ],
               ),
@@ -238,7 +211,7 @@ class HastaCard extends StatelessWidget {
                 width: double.infinity,
                 height: 130,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Color.fromARGB(255, 154, 166, 173),
                   borderRadius: BorderRadius.circular(dfBorderRadius / 2),
                   boxShadow: [
                     BoxShadow(
@@ -356,6 +329,7 @@ class CustomListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+        color: Color.fromARGB(255, 154, 166, 173),
         padding: EdgeInsets.all(16.0),
         child: Row(
           children: [

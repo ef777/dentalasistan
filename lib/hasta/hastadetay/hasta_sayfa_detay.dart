@@ -90,8 +90,8 @@ class _HastaDetaySayfaState extends State<HastaDetaySayfa> {
 
   @override
   void initState() {
-    hastaInfo();
-    // TODO: implement initState
+/*     hastaInfo();
+ */ // TODO: implement initState
     super.initState();
   }
 
@@ -139,82 +139,83 @@ class _HastaDetaySayfaState extends State<HastaDetaySayfa> {
           return Text(snapshot.error.toString());
         } else if (snapshot.hasData) {
           var hasta = snapshot.data as Hastadetay;
+          Config.secilenhastaetayid = hasta.id.toString();
+          print("hastaid" + hasta.id.toString());
           return Scaffold(
             appBar: AppBar(
-              leading: null,
-              backgroundColor: solidColor,
-              toolbarHeight:
-                  SizeConfig.safeBlockHorizontal * 60, // Set this height
-              flexibleSpace: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 22),
-                  child: Container(
-                    color: solidColor,
-                    child: Padding(
-                      padding: const EdgeInsets.all(28.0),
-                      child: Container(
-                        width: SizeConfig.safeBlockVertical * 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: Colors.white,
-                        ),
-                        height: 190,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 48, horizontal: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  hasta.name.toString() ?? "Ad Yok",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.w600),
-                                ),
-                                Text(
-                                  "Tc : ${hasta.identityNumber}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.w600),
-                                ),
-                                Text(
-                                  "Referans : ${hasta.referenceName}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.w600),
-                                ),
-                                Text(
-                                  "Nu : ${hasta.phone}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.w600),
-                                )
-                              ],
-                            ),
-                            CircleAvatar(
-                              backgroundImage: CachedNetworkImageProvider((hasta
-                                      .avatar.isEmpty)
-                                  ? ("https://www.w3schools.com/howto/img_avatar.png")
-                                  : hasta.avatar),
-                              radius: 48.0,
-                            ),
-                          ],
+                leading: null,
+                backgroundColor: solidColor,
+                toolbarHeight:
+                    SizeConfig.safeBlockHorizontal * 40, // Set this height
+                flexibleSpace: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Container(
+                      color: solidColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Container(
+                          width: SizeConfig.safeBlockVertical * 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: Colors.white,
+                          ),
+                          height: 190,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    hasta.name.toString() ?? "Ad Yok",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                  Text(
+                                    "Tc : ${hasta.identityNumber}",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                  Text(
+                                    "Referans : ${hasta.referenceName}",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                  Text(
+                                    "Nu : ${hasta.phone}",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                  )
+                                ],
+                              ),
+                              CircleAvatar(
+                                backgroundImage: CachedNetworkImageProvider((hasta
+                                        .avatar.isEmpty)
+                                    ? ("https://www.w3schools.com/howto/img_avatar.png")
+                                    : hasta.avatar),
+                                radius: 48.0,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
-            ),
-            body: Center(
-                child: SingleChildScrollView(
-              child: _widgetOptions.elementAt(_selectedIndex),
+                )),
+            body: SafeArea(
+                child: Center(
+              child: SizedBox(child: _widgetOptions.elementAt(_selectedIndex)),
             )),
             bottomNavigationBar: SalomonBottomBar(
               currentIndex: _selectedIndex,

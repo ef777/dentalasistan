@@ -1,4 +1,5 @@
 class Config {
+  static String secilenhastaetayid = "*";
   static String subeid = "*";
   static String id = "*";
   static String name = "*";

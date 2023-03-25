@@ -30,7 +30,7 @@ Future<void> main() async {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: [
-        const Locale('tr', 'TR'), // Thai
+        const Locale('tr', 'TR'),
       ],
       theme: ThemeData(
         primaryColor: Color.fromARGB(255, 26, 184, 87),
