@@ -132,126 +132,301 @@ class _HastaDetaySayfaState extends State<HastaDetaySayfa> {
 // https://demo.dentalasistanim.com/api/patients/2866/examinations?planningId=4
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: hastaInfo(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text(snapshot.error.toString());
-        } else if (snapshot.hasData) {
-          var hasta = snapshot.data as Hastadetay;
-          Config.secilenhastaetayid = hasta.id.toString();
-          print("hastaid" + hasta.id.toString());
-          return Scaffold(
-            appBar: AppBar(
-                leading: null,
-                backgroundColor: solidColor,
-                toolbarHeight:
-                    SizeConfig.safeBlockHorizontal * 40, // Set this height
-                flexibleSpace: SafeArea(
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: sfColor,
+        title: const Text(
+          "Hasta Detayı",
+        ),
+      ),
+      // appBar: AppBar(
+      //   leading: null,
+      //   backgroundColor: solidColor,
+      //   toolbarHeight: SizeConfig.safeBlockHorizontal * 40, // Set this height
+      // flexibleSpace: SafeArea(
+      //   child: Padding(
+      //     padding: const EdgeInsets.symmetric(horizontal: 5),
+      //     child: Container(
+      //       color: solidColor,
+      //       child: Padding(
+      //         padding: const EdgeInsets.all(5.0),
+      //         child: Container(
+      //           width: SizeConfig.safeBlockVertical * 40,
+      //           decoration: BoxDecoration(
+      //             borderRadius: BorderRadius.circular(25),
+      //             color: Colors.white,
+      //           ),
+      //           height: 190,
+      //           padding: const EdgeInsets.symmetric(
+      //               vertical: 20, horizontal: 15),
+      //           child: Row(
+      //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //             children: [
+      //               Column(
+      //                 crossAxisAlignment: CrossAxisAlignment.start,
+      //                 children: [
+      //                   Text(
+      //                     hasta.name.toString() ?? "Ad Yok",
+      //                     style: Theme.of(context)
+      //                         .textTheme
+      //                         .titleMedium
+      //                         ?.copyWith(fontWeight: FontWeight.w600),
+      //                   ),
+      //                   Text(
+      //                     "Tc : ${hasta.identityNumber}",
+      //                     style: Theme.of(context)
+      //                         .textTheme
+      //                         .titleMedium
+      //                         ?.copyWith(fontWeight: FontWeight.w600),
+      //                   ),
+      //                   Text(
+      //                     "Referans : ${hasta.referenceName}",
+      //                     style: Theme.of(context)
+      //                         .textTheme
+      //                         .titleMedium
+      //                         ?.copyWith(fontWeight: FontWeight.w600),
+      //                   ),
+      //                   Text(
+      //                     "Nu : ${hasta.phone}",
+      //                     style: Theme.of(context)
+      //                         .textTheme
+      //                         .titleMedium
+      //                         ?.copyWith(fontWeight: FontWeight.w600),
+      //                   )
+      //                 ],
+      //               ),
+      //               CircleAvatar(
+      //                 backgroundImage: NetworkImage(
+      //                     "https://www.w3schools.com/howto/img_avatar.png"),
+
+      //                 // CachedNetworkImageProvider((hasta
+      //                 //         .avatar.isEmpty)
+      //                 //     ? ("https://www.w3schools.com/howto/img_avatar.png")
+      //                 //     : hasta.avatar),
+      //                 radius: 48.0,
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
+      //),
+      // body: CustomScrollView(
+      //   slivers: [
+      //     SliverAppBar(
+      //       leading: const SizedBox.shrink(),
+      //       elevation: 0,
+      //       backgroundColor: sfColor,
+      //       expandedHeight: SizeConfig.screenHeight * 0.22,
+      //       floating: true,
+      //       pinned: false,
+      //       snap: true,
+      //       centerTitle: false,
+      //       flexibleSpace: FlexibleSpaceBar(
+      //         titlePadding: EdgeInsets.all(0),
+      //         background: Column(
+      //           children: [
+      //             Image.asset(
+      //               "assets/doctor1.png",
+      //               height: 170,
+      //             ),
+      //             const SizedBox(
+      //               height: 16,
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      // SliverToBoxAdapter(
+      //     child: Container(
+      //   decoration: BoxDecoration(
+      //     boxShadow: [
+      //       BoxShadow(
+      //         color: Colors.white.withOpacity(0.3),
+      //         offset: const Offset(0, 3),
+      //         blurRadius: 8.0,
+      //         spreadRadius: 4.0,
+      //       ),
+      //     ],
+      //     color: Colors.white,
+      //     borderRadius: BorderRadius.only(
+      //       topLeft: Radius.circular(dfBorderRadius),
+      //       topRight: Radius.circular(dfBorderRadius),
+      //     ),
+      //   ),
+      //   child: Column(
+      //     children: [
+      //       const SizedBox(
+      //         height: 16,
+      //       ),
+      //       Padding(
+      //         padding:
+      //             const EdgeInsets.only(left: 22, right: 22, bottom: 12),
+      //         child: TextField(
+      //           onChanged: (value) {
+      //             search(_searchController.text);
+      //           },
+      //           controller: _searchController,
+      //           keyboardType: TextInputType.emailAddress,
+      //           decoration: InputDecoration(
+      //               border: OutlineInputBorder(
+      //                 borderRadius: BorderRadius.circular(16.0),
+      //                 borderSide: BorderSide.none,
+      //               ),
+      //               filled: true,
+      //               fillColor: Color.fromARGB(255, 229, 237, 235),
+      //               hintText: "Arama Yap",
+      //               prefixIcon: const Icon(
+      //                 Icons.search,
+      //                 color: Colors.grey,
+      //                 size: 22,
+      //               )),
+      //         ),
+      //       ),
+
+      //       // SizedBox(
+      //       //   height: 500,
+      //       //   child: ListView.builder(
+      //       //     shrinkWrap: true,
+      //       //     itemCount: filteredVeri.length,
+      //       //     itemBuilder: (context, index) {
+      //       //       var item = filteredVeri[index];
+      //       //       return Center(child: HastaCard(item: item));
+      //       //     },
+      //       //   ),
+      //       // )
+      //     ],
+      //   ),
+      // )),
+
+      //     SliverList(
+      //       delegate: SliverChildBuilderDelegate(
+      //         childCount: 1,
+      //         (BuildContext context, int index) {
+      //           return Center(
+      //             child: _widgetOptions.elementAt(_selectedIndex),
+      //           );
+      //         },
+      //       ),
+      //     ),
+      //   ],
+      // ),
+
+      body: FutureBuilder(
+        future: hastaInfo(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          } else if (snapshot.hasData) {
+            var hasta = snapshot.data as Hastadetay;
+            Config.secilenhastaetayid = hasta.id.toString();
+            print("hastaid" + hasta.id.toString());
+
+            return ListView(
+              children: [
+                Container(
+                  color: sfColor,
+                  height: context.height * 0.20,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 18),
                     child: Container(
-                      color: solidColor,
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Container(
-                          width: SizeConfig.safeBlockVertical * 40,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            color: Colors.white,
-                          ),
-                          height: 190,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 15),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    hasta.name.toString() ?? "Ad Yok",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.w600),
-                                  ),
-                                  Text(
-                                    "Tc : ${hasta.identityNumber}",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.w600),
-                                  ),
-                                  Text(
-                                    "Referans : ${hasta.referenceName}",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.w600),
-                                  ),
-                                  Text(
-                                    "Nu : ${hasta.phone}",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.w600),
-                                  )
-                                ],
-                              ),
-                              CircleAvatar(
-                                backgroundImage: CachedNetworkImageProvider((hasta
-                                        .avatar.isEmpty)
-                                    ? ("https://www.w3schools.com/howto/img_avatar.png")
-                                    : hasta.avatar),
-                                radius: 48.0,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16, horizontal: 12),
+                        decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.white.withOpacity(0.3),
+                                offset: const Offset(0, 3),
+                                blurRadius: 8.0,
+                                spreadRadius: 2.0,
                               ),
                             ],
-                          ),
-                        ),
-                      ),
-                    ),
+                            color: const Color.fromARGB(255, 250, 249, 245),
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Row(
+                          children: [
+                            const CircleAvatar(
+                              radius: 45,
+                              backgroundImage: NetworkImage(
+                                  "https://www.w3schools.com/howto/img_avatar.png"),
+                            ),
+                            SizedBox(
+                              width: context.width * 0.03,
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Hasta Adı: ${hasta.name}",
+                                  style: context.textTheme.bodyLarge?.copyWith(
+                                      color: Colors.black, fontSize: 14),
+                                ),
+                                Text(
+                                  "Kimlik Num: ${hasta.identityNumber ?? " Bilgi Bulunamadı"}",
+                                  style: context.textTheme.bodyLarge?.copyWith(
+                                      color: Colors.black, fontSize: 14),
+                                ),
+                                Text(
+                                  "Telefon : ${hasta.phone ?? "Telefon Bilgisi Bulunamadı"}",
+                                  style: context.textTheme.bodyLarge?.copyWith(
+                                      color: Colors.black, fontSize: 14),
+                                ),
+                                // Text(
+                                //   "Hasta Referans :${hasta.referenceName ?? "Referans Bilgisi Bulunamadı"}",
+                                //   style: context.textTheme.bodyLarge?.copyWith(
+                                //       color: Colors.white, fontSize: 12),
+                                // ),
+                              ],
+                            ),
+                          ],
+                        )),
                   ),
-                )),
-            body: SafeArea(
-                child: Center(
-              child: SizedBox(child: _widgetOptions.elementAt(_selectedIndex)),
-            )),
-            bottomNavigationBar: SalomonBottomBar(
-              currentIndex: _selectedIndex,
-              onTap: (i) => setState(() => _selectedIndex = i),
-              items: [
-                /// Home
-                SalomonBottomBarItem(
-                  icon: const Icon(Icons.bar_chart_rounded),
-                  title: const Text("Tedaviler"),
-                  selectedColor: solidColor,
                 ),
-
-                /// Likes
-                SalomonBottomBarItem(
-                  icon: Icon(Icons.add_chart_outlined),
-                  title: Text("Tedavi Ekle"),
-                  selectedColor: solidColor,
+                Center(
+                  child: _widgetOptions.elementAt(_selectedIndex),
                 ),
-
-                /// Search
-                SalomonBottomBarItem(
-                  icon: Icon(Icons.money_sharp),
-                  title: Text("Cari Hareketler"),
-                  selectedColor: solidColor,
-                ),
-
-                /// Profile
               ],
-            ),
-          );
-        } else {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-      },
+            );
+          } else {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+        },
+      ),
+      bottomNavigationBar: SalomonBottomBar(
+        currentIndex: _selectedIndex,
+        onTap: (i) => setState(() => _selectedIndex = i),
+        items: [
+          /// Home
+          SalomonBottomBarItem(
+            icon: const Icon(Icons.bar_chart_rounded),
+            title: const Text("Tedaviler"),
+            selectedColor: solidColor,
+          ),
+
+          /// Likes
+          SalomonBottomBarItem(
+            icon: Icon(Icons.add_chart_outlined),
+            title: Text("Tedavi Ekle"),
+            selectedColor: solidColor,
+          ),
+
+          /// Search
+          SalomonBottomBarItem(
+            icon: Icon(Icons.money_sharp),
+            title: Text("Cari Hareketler"),
+            selectedColor: solidColor,
+          ),
+
+          /// Profile
+        ],
+      ),
     );
   }
 }

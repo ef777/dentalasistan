@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:dental_asistanim/home_view.dart';
 import 'package:dental_asistanim/randevu/randevuekle.dart';
+import 'package:drop_down_list/drop_down_list.dart';
+import 'package:drop_down_list/model/selected_list_item.dart';
 import 'package:http/http.dart' as http;
 import 'package:dental_asistanim/models/doctormodel.dart';
 import 'package:dental_asistanim/const.dart';
@@ -61,7 +63,7 @@ class _HastaekleState extends State<Hastaekle> {
   }
 
   List<doktorgetmodel> doktor = [];
-  doktorgetmodel? secilendoktor;
+  String? secilendoktor;
   @override
   void initState() {
     super.initState();
@@ -71,6 +73,10 @@ class _HastaekleState extends State<Hastaekle> {
       print(veri1);
       setState(() {
         doktor = veri1;
+        for (var element in doktor) {
+          _listOfDoctor.add(SelectedListItem(
+              name: element.name, value: element.id.toString()));
+        }
       });
     });
 
@@ -78,6 +84,11 @@ class _HastaekleState extends State<Hastaekle> {
     print(doktor);
   }
 
+  final List<SelectedListItem> _listOfDoctor = [];
+
+  String randevuDuruk = "Randevu Durumu Seçiniz ";
+
+  String doctorList = "Doktor Seçiniz";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,6 +146,10 @@ class _HastaekleState extends State<Hastaekle> {
                         },
                         maxLines: 1,
                         decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: solidColor),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: solidColor),
                             borderRadius: BorderRadius.circular(10),
@@ -166,6 +181,10 @@ class _HastaekleState extends State<Hastaekle> {
                         },
                         maxLines: 1,
                         decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: solidColor),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: solidColor),
                             borderRadius: BorderRadius.circular(10),
@@ -191,6 +210,10 @@ class _HastaekleState extends State<Hastaekle> {
                       TextFormField(
                         maxLines: 1,
                         decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: solidColor),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: solidColor),
                             borderRadius: BorderRadius.circular(10),
@@ -213,36 +236,105 @@ class _HastaekleState extends State<Hastaekle> {
                         },
                       ),
                       const SizedBox(height: 10),
-                      DropdownButtonFormField<doktorgetmodel>(
-                        value: secilendoktor,
-                        items: doktor?.map((doktorgetmodel value) {
-                          return DropdownMenuItem<doktorgetmodel>(
-                            value: value,
-                            child: Text(value.name!),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Hekim Seçiniz",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            secilendoktor = value;
-                          });
-                        },
+                      SizedBox(
+                        height: 52,
+                        child: TextButton(
+                            style: ButtonStyle(
+                              overlayColor:
+                                  MaterialStateProperty.resolveWith<Color?>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.hovered)) {
+                                    return Colors.transparent;
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                              ),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  side: BorderSide(color: solidColor),
+                                ),
+                              ),
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.white),
+                              padding:
+                                  MaterialStateProperty.all<EdgeInsetsGeometry>(
+                                const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 16),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(doctorList),
+                                Icon(Icons.arrow_drop_down),
+                              ],
+                            ),
+                            onPressed: () {
+                              DropDownState(
+                                DropDown(
+                                  bottomSheetTitle: Text("Doktor Seçiniz",
+                                      style: context.textTheme.titleMedium
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.w600)),
+                                  submitButtonChild: const Text(
+                                    'Seç',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  data: _listOfDoctor,
+                                  selectedItems: (List<dynamic> selectedList) {
+                                    List<String> list = [];
+                                    for (var item in selectedList) {
+                                      if (item is SelectedListItem) {
+                                        setState(() {
+                                          doctorList = item.name;
+                                          secilendoktor = item.value;
+                                        });
+                                        list.add(item.name);
+                                      }
+                                    }
+                                  },
+                                  enableMultipleSelection: false,
+                                ),
+                              ).showModal(context);
+                            }),
                       ),
+                      // DropdownButtonFormField<doktorgetmodel>(
+                      //   value: secilendoktor,
+                      //   items: doktor?.map((doktorgetmodel value) {
+                      //     return DropdownMenuItem<doktorgetmodel>(
+                      //       value: value,
+                      //       child: Text(value.name!),
+                      //     );
+                      //   }).toList(),
+                      //   decoration: InputDecoration(
+                      //     focusedBorder: OutlineInputBorder(
+                      //       borderSide: BorderSide(color: solidColor),
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //     labelText: "Hekim Seçiniz",
+                      //     filled: true,
+                      //     fillColor: Colors.white,
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //     contentPadding: const EdgeInsets.symmetric(
+                      //       vertical: 10,
+                      //       horizontal: 16,
+                      //     ),
+                      //   ),
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       secilendoktor = value;
+                      //     });
+                      //   },
+                      // ),
+
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: CustomButton(
@@ -253,7 +345,7 @@ class _HastaekleState extends State<Hastaekle> {
                                   _adsoyad.toString(),
                                   _telefonno.toString(),
                                   _onemlinot.toString(),
-                                  secilendoktor!.id.toString());
+                                  secilendoktor!.toString());
                               if (son == true) {
                                 Get.snackbar('Başarılı', 'Hasta Eklendi');
 

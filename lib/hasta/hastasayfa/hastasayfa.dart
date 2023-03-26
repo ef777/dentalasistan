@@ -3,11 +3,11 @@ import 'package:dental_asistanim/const.dart';
 import 'package:dental_asistanim/hasta/hastadetay/hasta_sayfa_detay.dart';
 import 'package:dental_asistanim/etc/sizeconfig.dart';
 import 'package:http/http.dart' as http;
-import 'package:dental_asistanim/randevu/randevutarih.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../config.dart';
+import 'hastaekle.dart';
 
 class HastaSayfa extends StatefulWidget {
   @override
@@ -80,16 +80,21 @@ class _HastaSayfaState extends State<HastaSayfa> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.height;
+    double desiredWidth;
+    if (screenWidth <= 900) {
+      // iPhone SE veya daha küçük cihazlar
+      desiredWidth = screenWidth * 0.40;
+    } else {
+      // iPhone X veya daha büyük cihazlar
+      desiredWidth = screenWidth * 0.3;
+    }
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: solidColor,
-          child: const Icon(Icons.add),
-        ),
-        backgroundColor: sfColor,
+        backgroundColor: Colors.white,
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: Colors.transparent,
+          title: const Text("Hasta Listesi"),
+          backgroundColor: sfColor,
           elevation: 0,
           actions: [
             Padding(
@@ -107,82 +112,130 @@ class _HastaSayfaState extends State<HastaSayfa> {
             )
           ],
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 16,
-            ),
-            Expanded(
-                child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.white.withOpacity(0.3),
-                    offset: const Offset(0, 3),
-                    blurRadius: 8.0,
-                    spreadRadius: 4.0,
-                  ),
-                ],
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(dfBorderRadius),
-                  topRight: Radius.circular(dfBorderRadius),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 22.0, vertical: 8),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Hasta Listesi",
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w600),
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              leading: const SizedBox.shrink(),
+              elevation: 0,
+              backgroundColor: sfColor,
+              expandedHeight: desiredWidth,
+              floating: true,
+              pinned: false,
+              snap: true,
+              centerTitle: false,
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: EdgeInsets.all(0),
+                background: Column(
+                  children: [
+                    Image.asset(
+                      "assets/doctor1.png",
+                      height: 170,
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        onChanged: (value) {
+                          search(_searchController.text);
+                        },
+                        controller: _searchController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: Color.fromARGB(255, 229, 237, 235),
+                            hintText: "Arama Yap",
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: Colors.grey,
+                              size: 22,
+                            )),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 22, right: 22, bottom: 12),
-                    child: TextField(
-                      onChanged: (value) {
-                        search(_searchController.text);
-                      },
-                      controller: _searchController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16.0),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Color.fromARGB(255, 229, 237, 235),
-                          hintText: "Arama Yap",
-                          prefixIcon: const Icon(
-                            Icons.search,
-                            color: Colors.grey,
-                            size: 22,
-                          )),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: filteredVeri.length,
-                      itemBuilder: (context, index) {
-                        var item = filteredVeri[index];
-                        return Center(child: HastaCard(item: item));
-                      },
-                    ),
-                  )
-                ],
+                  ],
+                ),
               ),
-            )),
+            ),
+            // SliverToBoxAdapter(
+            //     child: Container(
+            //   decoration: BoxDecoration(
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.white.withOpacity(0.3),
+            //         offset: const Offset(0, 3),
+            //         blurRadius: 8.0,
+            //         spreadRadius: 4.0,
+            //       ),
+            //     ],
+            //     color: Colors.white,
+            //     borderRadius: BorderRadius.only(
+            //       topLeft: Radius.circular(dfBorderRadius),
+            //       topRight: Radius.circular(dfBorderRadius),
+            //     ),
+            //   ),
+            //   child: Column(
+            //     children: [
+            //       const SizedBox(
+            //         height: 16,
+            //       ),
+            //       Padding(
+            //         padding:
+            //             const EdgeInsets.only(left: 22, right: 22, bottom: 12),
+            //         child: TextField(
+            //           onChanged: (value) {
+            //             search(_searchController.text);
+            //           },
+            //           controller: _searchController,
+            //           keyboardType: TextInputType.emailAddress,
+            //           decoration: InputDecoration(
+            //               border: OutlineInputBorder(
+            //                 borderRadius: BorderRadius.circular(16.0),
+            //                 borderSide: BorderSide.none,
+            //               ),
+            //               filled: true,
+            //               fillColor: Color.fromARGB(255, 229, 237, 235),
+            //               hintText: "Arama Yap",
+            //               prefixIcon: const Icon(
+            //                 Icons.search,
+            //                 color: Colors.grey,
+            //                 size: 22,
+            //               )),
+            //         ),
+            //       ),
+
+            //       // SizedBox(
+            //       //   height: 500,
+            //       //   child: ListView.builder(
+            //       //     shrinkWrap: true,
+            //       //     itemCount: filteredVeri.length,
+            //       //     itemBuilder: (context, index) {
+            //       //       var item = filteredVeri[index];
+            //       //       return Center(child: HastaCard(item: item));
+            //       //     },
+            //       //   ),
+            //       // )
+            //     ],
+            //   ),
+            // )),
+
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  var item = filteredVeri[index];
+                  return Column(
+                    children: [
+                      Center(child: HastaCard(item: item)),
+                    ],
+                  );
+                },
+                childCount: filteredVeri.length,
+              ),
+            ),
           ],
         ));
   }
@@ -201,17 +254,16 @@ class HastaCard extends StatelessWidget {
         Get.to(HastaDetaySayfa(id: item["id"].toString()));
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Stack(
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 8),
               child: Container(
-                padding: const EdgeInsets.all(8),
                 width: double.infinity,
                 height: 130,
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 154, 166, 173),
+                  color: const Color.fromARGB(255, 239, 241, 243),
                   borderRadius: BorderRadius.circular(dfBorderRadius / 2),
                   boxShadow: [
                     BoxShadow(
@@ -222,71 +274,74 @@ class HastaCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Hasta Adı : " + item['name'],
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.more_vert_rounded))
-                      ],
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 4, right: 23),
-                      child: Divider(
-                        height: 10,
-                        thickness: 1,
-                        color: Color.fromARGB(255, 230, 224, 224),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Hasta Adı : " + item['name'],
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.more_vert_rounded))
+                        ],
                       ),
-                    ),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.blue,
-                          backgroundImage: NetworkImage(item["avatar"] == null
-                              ? "https://www.w3schools.com/howto/img_avatar.png"
-                              : item["avatar"].toString()),
-                          radius: 24.0,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: solidColor,
-                                width: 3.0,
+                      const Padding(
+                        padding: EdgeInsets.only(left: 4, right: 23),
+                        child: Divider(
+                          height: 10,
+                          thickness: 1,
+                          color: Color.fromARGB(255, 230, 224, 224),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.blue,
+                            backgroundImage: NetworkImage(item["avatar"] == null
+                                ? "https://www.w3schools.com/howto/img_avatar.png"
+                                : item["avatar"].toString()),
+                            radius: 24.0,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: solidColor,
+                                  width: 3.0,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        SizedBox(width: SizeConfig.screenWidth * 0.02),
-                        Row(
-                          children: [
-                            Text(
-                              "Telefon : ",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(fontWeight: FontWeight.w600),
-                            ),
-                            Text(
-                              item['phone'] ?? "*",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                          SizedBox(width: SizeConfig.screenWidth * 0.02),
+                          Row(
+                            children: [
+                              Text(
+                                "Telefon : ",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                              Text(
+                                item['phone'] ?? "*",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

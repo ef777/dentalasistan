@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:calendar_agenda/calendar_agenda.dart';
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:dental_asistanim/models/randevumodel.dart';
 import 'package:dental_asistanim/etc/sizeconfig.dart';
@@ -65,19 +66,65 @@ class _YaklasanRandevuState extends State<YaklasanRandevu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: solidColor,
-        onPressed: () async {
-          final DateTime? picked = await showRoundedDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime(DateTime.now().year - 1),
-            lastDate: DateTime(DateTime.now().year + 1),
-            borderRadius: 16,
-          );
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: solidColor,
+      //   onPressed: () async {
+      //     final DateTime? picked = await showRoundedDatePicker(
+      //       context: context,
+      //       initialDate: DateTime.now(),
+      //       firstDate: DateTime(DateTime.now().year - 1),
+      //       lastDate: DateTime(DateTime.now().year + 1),
+      //       borderRadius: 16,
+      //     );
+
+      //     setState(() {
+      //       secilen = picked;
+
+      //       if (secilen!.month < 10 && secilen!.day < 10) {
+      //         secilenstring =
+      //             "${secilen!.year}-0${secilen!.month}-0${secilen!.day}";
+      //       }
+      //       if (secilen!.month < 10 && secilen!.day > 10) {
+      //         secilenstring =
+      //             "${secilen!.year}-0${secilen!.month}-${secilen!.day}";
+      //       }
+      //       if (secilen!.month > 10 && secilen!.day < 10) {
+      //         secilenstring =
+      //             "${secilen!.year}-${secilen!.month}-0${secilen!.day}";
+      //       }
+      //       if (secilen!.month > 10 && secilen!.day > 10) {
+      //         secilenstring =
+      //             "${secilen!.year}-${secilen!.month}-${secilen!.day}";
+      //       }
+      //       //
+      //     });
+      //   },
+      //   tooltip: 'Aralık Seçin',
+      //   child: const Icon(Icons.calendar_today_outlined, color: Colors.white),
+      // ),
+      backgroundColor: sfColor,
+      appBar: CalendarAgenda(
+        backgroundColor: sfColor,
+        fullCalendar: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        locale: "tr",
+        appbar: true,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now().subtract(Duration(days: 15)),
+        lastDate: DateTime.now().add(Duration(days: 15)),
+        onDateSelected: (date) async {
+          print(date);
 
           setState(() {
-            secilen = picked;
+            secilen = date;
 
             if (secilen!.month < 10 && secilen!.day < 10) {
               secilenstring =
@@ -98,20 +145,6 @@ class _YaklasanRandevuState extends State<YaklasanRandevu> {
             //
           });
         },
-        tooltip: 'Aralık Seçin',
-        child: const Icon(Icons.calendar_today_outlined, color: Colors.white),
-      ),
-      backgroundColor: sfColor,
-      appBar: AppBar(
-        elevation: 0,
-        title: Text(
-          "Yaklaşan Randevu",
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall
-              ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white),
-        ),
-        backgroundColor: Colors.transparent,
       ),
       body: FutureBuilder(
           future: secilen.isNull
@@ -129,13 +162,6 @@ class _YaklasanRandevuState extends State<YaklasanRandevu> {
               print("buildde veri uzunluğu ${veri.length}");
               return Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 24, bottom: 8),
-                    child: Image.asset(
-                      "assets/yaklasan.png",
-                      height: 75,
-                    ),
-                  ),
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(12),

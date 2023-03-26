@@ -4,6 +4,7 @@ import 'package:dental_asistanim/const.dart';
 import 'package:dental_asistanim/models/hastatedaviler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class TedavilerSayfasi extends StatefulWidget {
   const TedavilerSayfasi({Key? key}) : super(key: key);
@@ -37,57 +38,60 @@ class _TedavilerSayfasiState extends State<TedavilerSayfasi> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 1,
-      child: Scaffold(
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SegmentedTabControl(
-                  height: 50,
-                  // Customization of widget
-                  radius: const Radius.circular(12),
-                  backgroundColor: Colors.grey.shade300,
-                  indicatorColor: Colors.orange.shade200,
-                  tabTextColor: Colors.black45,
-                  selectedTabTextColor: Colors.white,
-                  squeezeIntensity: 2,
-
-                  tabPadding: const EdgeInsets.symmetric(horizontal: 8),
-                  textStyle: Theme.of(context).textTheme.bodyText1,
-                  // Options for selection
-                  // All specified values will override the [SegmentedTabControl] setting
-                  tabs: [
-                    /*  SegmentTab(
+    return SizedBox(
+      height: context.height,
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          body: SafeArea(
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: SegmentedTabControl(
+                    // Customization of widget
+                    radius: const Radius.circular(3),
+                    backgroundColor: Colors.grey.shade300,
+                    indicatorColor: Colors.orange.shade200,
+                    tabTextColor: Colors.black45,
+                    selectedTabTextColor: Colors.white,
+                    squeezeIntensity: 2,
+                    height: 45,
+                    tabPadding: const EdgeInsets.symmetric(horizontal: 8),
+                    textStyle: Theme.of(context).textTheme.bodyText1,
+                    // Options for selection
+                    // All specified values will override the [SegmentedTabControl] setting
+                    tabs: const [
+                      SegmentTab(
                         label: 'Devam Edenler',
                         // For example, this overrides [indicatorColor] from [SegmentedTabControl]
-                        color: solidColor),
-                    SegmentTab(
-                      color: solidColor,
-                      label: 'Planlananlar',
-                    ), */
-                    SegmentTab(
-                      color: solidColor,
-                      label: 'Bitenler',
-                    ),
-                  ],
+                        color: Color.fromARGB(255, 154, 188, 239),
+                      ),
+                      SegmentTab(
+                        label: 'Planlamalar',
+                        color: Color.fromARGB(255, 154, 188, 239),
+                      ),
+                      SegmentTab(
+                        label: 'Bitenler',
+                        color: Color.fromARGB(255, 154, 188, 239),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // Sample pages
-              const Padding(
-                padding: EdgeInsets.only(top: 70),
-                child: TabBarView(
-                  physics: BouncingScrollPhysics(),
-                  children: [
-                    /*   DevamEden(),
-                    Planlanan(), */
-                    Biten(),
-                  ],
+                // Sample pages
+                const Padding(
+                  padding: EdgeInsets.only(top: 70),
+                  child: TabBarView(
+                    physics: BouncingScrollPhysics(),
+                    children: [
+                      Biten(),
+                      Biten(),
+                      Biten(),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -101,6 +105,7 @@ class Biten extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      shrinkWrap: true,
       itemCount: tedaviler.length,
       itemBuilder: (BuildContext context, int index) {
         return Padding(
@@ -135,7 +140,7 @@ class TedaviCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 154, 166, 173),
+        color: Color.fromARGB(255, 255, 255, 255),
         borderRadius: BorderRadius.circular(dfBorderRadius / 2),
         boxShadow: [
           BoxShadow(

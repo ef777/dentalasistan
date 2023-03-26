@@ -1,8 +1,8 @@
 import 'package:dental_asistanim/etc/SelectionModel.dart';
 import 'package:dental_asistanim/const.dart';
+import 'package:dental_asistanim/etc/sizeconfig.dart';
 import 'package:dental_asistanim/hasta/hastasayfa/hastaekle.dart';
 import 'package:dental_asistanim/randevu/randevuekle.dart';
-import 'package:dental_asistanim/etc/selectionCard.dart';
 import 'package:dental_asistanim/randevu/yaklasan_randevu.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,7 +25,6 @@ class _HomeViewState extends State<HomeView> {
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
-        backgroundColor: sfColor,
         appBar: AppBar(
           actions: [
             IconButton(
@@ -36,76 +35,237 @@ class _HomeViewState extends State<HomeView> {
           ],
           automaticallyImplyLeading: false,
           elevation: 0,
-          backgroundColor: Colors.transparent,
-          title: const ProfileAppbar(),
+          backgroundColor: sfColor,
         ),
-        body: Column(
+        body: ListView(
           children: [
+            Container(
+              height: 160,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.3),
+                      offset: const Offset(0, 3),
+                      blurRadius: 8.0,
+                      spreadRadius: 2.0,
+                    ),
+                  ],
+                  color: sfColor,
+                  borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(32),
+                      bottomRight: Radius.circular(32))),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.blue, // Solid renk
+                      backgroundImage:
+                          const AssetImage('assets/avatarImage.png'),
+                      radius: 45.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 11, 67, 12),
+                            width: 3.0, // Kenarlık kalınlığı
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: context.width * 0.02,
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            "Doctor : Önder Akkaya",
+                            style: TextStyle(
+                              fontSize: 22.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Text(
+                            "Admin",
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Color.fromARGB(255, 255, 255, 255),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(
               height: 8,
             ),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.white.withOpacity(0.3),
-                      offset: const Offset(0, 3),
-                      blurRadius: 8.0,
-                      spreadRadius: 4.0,
-                    ),
-                  ],
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(dfBorderRadius),
-                    topRight: Radius.circular(dfBorderRadius),
+            Padding(
+              padding: const EdgeInsets.only(left: 15, top: 15),
+              child: Column(
+                children: [
+                  // const Divider(
+                  //   height: 0.2,
+                  //   thickness: 1,
+                  // ),
+                  // SelectionCard(
+                  //   onPressed: () {
+                  //     Get.to(YaklasanRandevu());
+                  //   },
+                  //   size: size,
+                  //   selectionCardModel: selectionCardModelList[0],
+                  // ),
+                  // SelectionCard(
+                  //   onPressed: () {
+                  //     Get.to(RandevuEkle());
+                  //   },
+                  //   size: size,
+                  //   selectionCardModel: selectionCardModelList[1],
+                  // ),
+                  // SelectionCard(
+                  //   onPressed: () {
+                  //     Get.to(HastaSayfa());
+                  //   },
+                  //   size: size,
+                  // selectionCardModel: selectionCardModelList[2],
+                  // ),
+                  // SelectionCard(
+                  //   onPressed: () {
+                  //     Get.to(Hastaekle());
+                  //   },
+                  //   size: size,
+                  //   selectionCardModel: selectionCardModelList[3],
+                  // ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MenuCard(
+                        onTap: () => Get.to(const YaklasanRandevu()),
+                        selectionCardModel2: selectionCardModelList2[0],
+                      ),
+                      MenuCard(
+                        onTap: () => Get.to(RandevuEkle()),
+                        selectionCardModel2: selectionCardModelList2[1],
+                      ),
+                    ],
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        const Divider(
-                          height: 0.2,
-                          thickness: 1,
-                        ),
-                        SelectionCard(
-                          onPressed: () {
-                            Get.to(YaklasanRandevu());
-                          },
-                          size: size,
-                          selectionCardModel: selectionCardModelList[0],
-                        ),
-                        SelectionCard(
-                          onPressed: () {
-                            Get.to(RandevuEkle());
-                          },
-                          size: size,
-                          selectionCardModel: selectionCardModelList[1],
-                        ),
-                        SelectionCard(
-                          onPressed: () {
-                            Get.to(HastaSayfa());
-                          },
-                          size: size,
-                          selectionCardModel: selectionCardModelList[2],
-                        ),
-                        SelectionCard(
-                          onPressed: () {
-                            Get.to(Hastaekle());
-                          },
-                          size: size,
-                          selectionCardModel: selectionCardModelList[3],
-                        )
-                      ],
-                    ),
+                  const SizedBox(
+                    height: 40,
                   ),
-                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MenuCard(
+                        onTap: () => Get.to(HastaSayfa()),
+                        selectionCardModel2: selectionCardModelList2[2],
+                      ),
+                      MenuCard(
+                        onTap: () => Get.to(Hastaekle()),
+                        selectionCardModel2: selectionCardModelList2[3],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                ],
               ),
             )
           ],
         ));
+  }
+}
+
+class MenuCard extends StatelessWidget {
+  const MenuCard({
+    super.key,
+    required this.selectionCardModel2,
+    required this.onTap,
+  });
+  final SelectionCardModel2 selectionCardModel2;
+  final Function() onTap;
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Ink(
+        child: SizedBox(
+          width: SizeConfig.screenWidth * 0.48,
+          height: SizeConfig.screenWidth * 0.48,
+          child: Stack(children: [
+            Positioned(
+              bottom: 0,
+              child: Container(
+                width: SizeConfig.screenWidth * 0.42,
+                height: SizeConfig.screenWidth * 0.42,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 20,
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(16)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    Text(
+                      selectionCardModel2.title,
+                      style: context.textTheme.labelLarge
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      selectionCardModel2.desc,
+                      style: context.textTheme.labelMedium
+                          ?.copyWith(color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              left: 22,
+              child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: selectionCardModel2.color.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 7,
+                          offset:
+                              const Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                      color: selectionCardModel2.color,
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Center(child: selectionCardModel2.iconWidget)),
+            )
+          ]),
+        ),
+      ),
+    );
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:dental_asistanim/etc/custon_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../etc/sizeconfig.dart';
 
@@ -8,48 +9,125 @@ class CariHareketler extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: SizeConfig.safeBlockVertical * 2,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text(
-              "Cari Hesaplar",
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w500),
-            ),
-            CustomButton(
-              title: "İndirim Ekle",
-              onPressed: () {},
-              height: 40,
-              color: Color.fromARGB(255, 57, 184, 157),
-            ),
-            CustomButton(
-              title: "Ödeme Ekle",
-              onPressed: () {},
-              height: 40,
-              color: Color.fromARGB(255, 3, 16, 155),
-            )
-          ],
-        ),
-        SizedBox(
-          height: SizeConfig.safeBlockVertical * 2,
-        ),
-        const Padding(
-          padding: EdgeInsets.all(12.0),
-          child: CariCard(
-            fiyat: "300",
-            not: "",
-            tip: "nakit",
-            tarih: "09 - 05 - 2022",
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: SizeConfig.safeBlockVertical * 2,
           ),
-        )
-      ],
+          Text(
+            "Cari Hesaplar",
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.w500),
+          ),
+          SizedBox(
+            height: SizeConfig.safeBlockVertical * 2,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              InkWell(
+                onTap: () {},
+                child: Ink(
+                  child: Container(
+                    width: context.width / 2.2,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 16),
+                    decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.greenAccent.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 3,
+                            offset: const Offset(
+                                0, 3), // changes position of shadow
+                          ),
+                        ],
+                        color: Colors.greenAccent,
+                        borderRadius: BorderRadius.circular(16)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            "assets/down3.jpeg",
+                            height: 70,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Flexible(
+                          child: Text("İndirim Ekle",
+                              style: context.textTheme.bodyLarge
+                                  ?.copyWith(color: Colors.white)),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {},
+                child: Ink(
+                  child: Container(
+                    width: context.width / 2.2,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 16),
+                    decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromARGB(255, 39, 10, 229)
+                                .withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 3,
+                            offset: const Offset(
+                                0, 3), // changes position of shadow
+                          ),
+                        ],
+                        color: Color.fromARGB(255, 41, 23, 240),
+                        borderRadius: BorderRadius.circular(16)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            "assets/add.jpeg",
+                            height: 70,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Flexible(
+                          child: Text("Ödeme Ekle",
+                              style: context.textTheme.bodyLarge
+                                  ?.copyWith(color: Colors.white)),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Padding(
+            padding: EdgeInsets.all(12.0),
+            child: CariCard(
+              fiyat: "300",
+              not: "",
+              tip: "nakit",
+              tarih: "09 - 05 - 2022",
+            ),
+          )
+        ],
+      ),
     );
   }
 }

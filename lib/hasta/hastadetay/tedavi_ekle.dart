@@ -6,6 +6,8 @@ import 'package:dental_asistanim/models/doctormodel.dart';
 import 'package:dental_asistanim/models/treatmantgrup.dart';
 import 'package:dental_asistanim/models/treatmantsmodel.dart';
 import 'package:dental_asistanim/models/treatmentlist.dart';
+import 'package:drop_down_list/drop_down_list.dart';
+import 'package:drop_down_list/model/selected_list_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,7 +26,7 @@ Future<bool> tedaviekle(
     hastaid, doctorid, utarife, tedaviid, disno, islemtipid) async {
   try {
     var url = Uri.parse(
-        'https://demo.dentalasistanim.com/api/patients/${hastaid}/examinations?doctorId=${doctorid}&priceListId=${utarife}&treatmentId=${tedaviid}&toothNumbers[]=${disno}&treatmentPlanningId=${islemtipid}&canals[]=');
+        'https://demo.dentalasistanim.com/api/patients/$hastaid/examinations?doctorId=$doctorid&priceListId=$utarife&treatmentId=$tedaviid&toothNumbers[]=$disno&treatmentPlanningId=$islemtipid&canals[]=');
     var response = await http.post(
       url,
       headers: {
@@ -56,58 +58,87 @@ Future<bool> tedaviekle(
 class _TedaviEkleState extends State<TedaviEkle> {
   @override
   initState() {
+    for (var element in _tedaviTipi) {
+      _listOfIslem.add(SelectedListItem(name: element));
+    }
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final islemtip1 = await Treatmentlist.treatmentlistgetir();
       setState(() {
         islemtip = islemtip1;
+        for (var element in islemtip!) {
+          _listOfTarife.add(SelectedListItem(
+              name: element.name, value: element.id.toString()));
+        }
+        print(_listOfTarife);
       });
     });
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final islemtip1 = await randevugrupmodel.randevuturugrup();
       setState(() {
         randevuturu = islemtip1;
+        for (var element in randevuturu!) {
+          _listOfTedavi.add(SelectedListItem(
+              name: element.name.toString(), value: element.id.toString()));
+        }
       });
     });
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final doktorlar = await doktorgetmodel.doktorliste();
       setState(() {
         doktors = doktorlar;
+        for (var element in doktors) {
+          _listOfDoctor.add(SelectedListItem(
+              name: element.name, value: element.id.toString()));
+        }
       });
     });
   }
 
   List<doktorgetmodel> doktors = [];
-  doktorgetmodel? secilendoktor;
+  int secilendoktor = 0;
+  String money = "0";
   var disno;
   String _searchText = "";
   var _searchResult;
-  treatmentlist? secilentipislem;
+  int secilentipislem = 0;
   List<treatmentlist>? islemtip;
   List<randevugrupmodel>? randevuturu;
+
   randevugrupmodel? secilentiprandevu;
 
   List<Treatments>? tiptedaviler;
-  Treatments? secilentiptedaviler;
+  int secilentiptedaviler = 0;
+  final List<SelectedListItem> _listOfTarife = [];
+  final List<SelectedListItem> _listOfTedavi = [];
+  final List<SelectedListItem> _listOfDoctor = [];
+
+  final List<SelectedListItem> _listOfIslem = [];
+
+  String randevuType = "Bir İşlem Seçiniz";
+  String randevuPrice = "Ücret Tarifesi Seçiniz";
+  String tedavi = "Bir Tedavi Seçiniz";
+  String doctorList = "Doktor Seçiniz";
+  String _tedaviTi = "";
+
+  List<String> _tedaviTipi = [
+    'Diagnoz',
+    'Planlama 1',
+    'Planlama 2',
+    'Planlama 3',
+    'Planlama 4',
+    'Planlama 5',
+    'Planlama 6',
+    'Tedavi',
+  ];
+  List<String> _tedaviTipideger = [
+    'Seçiniz',
+  ];
+
+  int _selectedValue = 1;
+
   @override
   Widget build(BuildContext context) {
-    String _tedaviTi = "";
-
-    List<String> _tedaviTipi = [
-      'Diagnoz',
-      'Planlama 1',
-      'Planlama 2',
-      'Planlama 3',
-      'Planlama 4',
-      'Planlama 5',
-      'Planlama 6',
-      'Tedavi',
-    ];
-    List<String> _tedaviTipideger = [
-      'Seçiniz',
-    ];
-    int _selectedValue = 1;
-
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         child: SingleChildScrollView(
@@ -121,334 +152,381 @@ class _TedaviEkleState extends State<TedaviEkle> {
                     .headlineSmall
                     ?.copyWith(fontWeight: FontWeight.w500),
               ),
-              const SizedBox(
-                height: 20,
-              ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<treatmentlist>(
-                value: secilentipislem,
-                items: islemtip?.map((treatmentlist value) {
-                  return DropdownMenuItem<treatmentlist>(
-                    value: value,
-                    child: Text(value.name!),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: solidColor),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  labelText: "Ücret Tarifesi Seçiniz",
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 16,
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    secilentipislem = value;
-                  });
-                },
-              ),
+              _tarifeWidget(context),
+              // DropdownButtonFormField<treatmentlist>(
+              //   value: secilentipislem,
+              //   items: islemtip?.map((treatmentlist value) {
+              //     return DropdownMenuItem<treatmentlist>(
+              //       value: value,
+              //       child: Text(value.name!),
+              //     );
+              //   }).toList(),
+              //   decoration: InputDecoration(
+              //     focusedBorder: OutlineInputBorder(
+              //       borderSide: BorderSide(color: solidColor),
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     labelText: "Ücret Tarifesi Seçiniz",
+              //     filled: true,
+              //     fillColor: Colors.white,
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     contentPadding: const EdgeInsets.symmetric(
+              //       vertical: 10,
+              //       horizontal: 16,
+              //     ),
+              //   ),
+              //   onChanged: (value) {
+              //     setState(() {
+              //       secilentipislem = value;
+              //     });
+              //   },
+              // ),
+
               const SizedBox(
-                height: 20,
+                height: 12,
               ),
-              DropdownButtonFormField<String>(
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Lütfen Tedavi Tipi Seçiniz';
-                  }
-                  return null;
-                },
-                value: _tedaviTi.isEmpty ? null : _tedaviTi,
-                items: _tedaviTipi.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value.isEmpty ? null : value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: solidColor),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  labelText: "İşlem Seçimi",
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 16,
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    if (value != null) {
-                      _selectedValue = _tedaviTipi.indexOf(value);
-                      _tedaviTi = _tedaviTipideger[_selectedValue];
-                    } else {
-                      _tedaviTi = "";
+              _islemWidget(context),
+              // DropdownButtonFormField<String>(
+              //   validator: (value) {
+              //     if (value!.isEmpty) {
+              //       return 'Lütfen Tedavi Tipi Seçiniz';
+              //     }
+              //     return null;
+              //   },
+              //   value: _tedaviTi.isEmpty ? null : _tedaviTi,
+              //   items: _tedaviTipi.map((String value) {
+              //     return DropdownMenuItem<String>(
+              //       value: value.isEmpty ? null : value,
+              //       child: Text(value),
+              //     );
+              //   }).toList(),
+              //   decoration: InputDecoration(
+              //     focusedBorder: OutlineInputBorder(
+              //       borderSide: BorderSide(color: solidColor),
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     labelText: "İşlem Seçimi",
+              //     filled: true,
+              //     fillColor: Colors.white,
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     contentPadding: const EdgeInsets.symmetric(
+              //       vertical: 10,
+              //       horizontal: 16,
+              //     ),
+              //   ),
+              //   onChanged: (value) {
+              //     setState(() {
+              //       if (value != null) {
+              //         _selectedValue = _tedaviTipi.indexOf(value);
+              //         _tedaviTi = _tedaviTipideger[_selectedValue];
+              //       } else {
+              //         _tedaviTi = "";
+              //       }
+              //     });
+              //   },
+              // ),
+
+              const SizedBox(
+                height: 12,
+              ),
+              _tedaviWidget(context),
+              // DropdownButtonFormField<randevugrupmodel>(
+              //   value: secilentiprandevu,
+              //   items: randevuturu?.map((randevugrupmodel value) {
+              //     return DropdownMenuItem<randevugrupmodel>(
+              //       value: value,
+              //       child: Text(value.name!),
+              //     );
+              //   }).toList(),
+              //   decoration: InputDecoration(
+              //     focusedBorder: OutlineInputBorder(
+              //       borderSide: BorderSide(color: solidColor),
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     labelText: "Tedavi Grup",
+              //     filled: true,
+              //     fillColor: Colors.white,
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     contentPadding: const EdgeInsets.symmetric(
+              //       vertical: 10,
+              //       horizontal: 16,
+              //     ),
+              //   ),
+              //   onChanged: (value) {
+              //     setState(() {
+              //       secilentiprandevu = value;
+              //     });
+              //   },
+              // ),
+              const SizedBox(
+                height: 12,
+              ),
+              // TextButton(
+              //     style: ButtonStyle(
+              //       overlayColor: MaterialStateProperty.resolveWith<Color?>(
+              //         (Set<MaterialState> states) {
+              //           if (states.contains(MaterialState.hovered)) {
+              //             return Colors.transparent;
+              //           } else {
+              //             return null;
+              //           }
+              //         },
+              //       ),
+              //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              //         RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(10),
+              //           side: BorderSide(color: solidColor),
+              //         ),
+              //       ),
+              //       backgroundColor:
+              //           MaterialStateProperty.all<Color>(Colors.white),
+              //       padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+              //         const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              //       ),
+              //     ),
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         Text(secilentiptedaviler?.title ?? "Tedavi Seçiniz"),
+              //         Icon(Icons.arrow_drop_down),
+              //       ],
+              //     ),
+              //     onPressed: () {
+              //       showModalBottomSheet(
+              //           context: context,
+              //           builder: (BuildContext context) {
+              //             return StatefulBuilder(builder:
+              //                 (BuildContext context, StateSetter setState) {
+              //               return FutureBuilder(
+              //                   future: Treatments.treatmentsgetir(
+              //                       secilentipislem!.id, secilentiprandevu!.id),
+              //                   builder: (context, snapshot) {
+              //                     if (snapshot.hasData) {
+              //                       tiptedaviler =
+              //                           snapshot.data as List<Treatments>;
+              //                       print("builde gelen data + $tiptedaviler");
+              //                       return Container(
+              //                         padding: const EdgeInsets.all(16),
+              //                         child: Column(
+              //                           mainAxisSize: MainAxisSize.min,
+              //                           children: [
+              //                             TextField(
+              //                               decoration: InputDecoration(
+              //                                 prefixIcon: Icon(Icons.search),
+              //                                 hintText: 'Tedavi seç...',
+              //                               ),
+              //                               onChanged: (text) {
+              //                                 print(
+              //                                     'Search text: $_searchText');
+              //                                 print(
+              //                                     'Search result: $_searchResult');
+
+              //                                 setState(() {
+              //                                   _searchText = text;
+              //                                   _searchResult = tiptedaviler!
+              //                                       .where((tiptedaviler) =>
+              //                                           tiptedaviler!.title!
+              //                                               .toLowerCase()
+              //                                               .contains(_searchText
+              //                                                   .toLowerCase()))
+              //                                       .toList();
+              //                                 });
+              //                               },
+              //                             ),
+              //                             SizedBox(height: 10),
+              //                             Expanded(
+              //                               child: ListView.builder(
+              //                                 shrinkWrap: true,
+              //                                 itemCount: _searchText.isEmpty
+              //                                     ? tiptedaviler!.length
+              //                                     : _searchResult.length,
+              //                                 itemBuilder: (context, index) {
+              //                                   final Treatments hasta =
+              //                                       _searchText.isEmpty
+              //                                           ? tiptedaviler![index]
+              //                                           : _searchResult[index];
+
+              //                                   return ListTile(
+              //                                     title: Text(hasta.title!),
+              //                                     selected:
+              //                                         secilentiptedaviler ==
+              //                                             hasta,
+              //                                     onTap: () {
+              //                                       setState(() {
+              //                                         secilentiptedaviler =
+              //                                             hasta;
+              //                                       });
+              //                                       navigator!.pop();
+              //                                     },
+              //                                   );
+              //                                 },
+              //                               ),
+              //                             ),
+              //                           ],
+              //                         ),
+              //                       );
+              //                     } else {
+              //                       return Center(
+              //                         child: CircularProgressIndicator(),
+              //                       );
+              //                     }
+              //                   });
+              //             });
+              //           });
+              //     }),
+
+              SizedBox(
+                height: 44,
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Lütfen diş seçiniz';
                     }
-                  });
-                },
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              DropdownButtonFormField<randevugrupmodel>(
-                value: secilentiprandevu,
-                items: randevuturu?.map((randevugrupmodel value) {
-                  return DropdownMenuItem<randevugrupmodel>(
-                    value: value,
-                    child: Text(value.name!),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: solidColor),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  labelText: "Tedavi Grup",
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 16,
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    secilentiprandevu = value;
-                  });
-                },
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              TextButton(
-                  style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                      (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.hovered)) {
-                          return Colors.transparent;
-                        } else {
-                          return null;
-                        }
-                      },
-                    ),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: solidColor),
-                      ),
-                    ),
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.white),
-                    padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(secilentiptedaviler?.title ?? "Tedavi Seçiniz"),
-                      Icon(Icons.arrow_drop_down),
-                    ],
-                  ),
-                  onPressed: () {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return StatefulBuilder(builder:
-                              (BuildContext context, StateSetter setState) {
-                            return FutureBuilder(
-                                future: Treatments.treatmentsgetir(
-                                    secilentipislem!.id, secilentiprandevu!.id),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    tiptedaviler =
-                                        snapshot.data as List<Treatments>;
-                                    print("builde gelen data + $tiptedaviler");
-                                    return Container(
-                                      padding: const EdgeInsets.all(16),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          TextField(
-                                            decoration: InputDecoration(
-                                              prefixIcon: Icon(Icons.search),
-                                              hintText: 'Tedavi seç...',
-                                            ),
-                                            onChanged: (text) {
-                                              print(
-                                                  'Search text: $_searchText');
-                                              print(
-                                                  'Search result: $_searchResult');
-
-                                              setState(() {
-                                                _searchText = text;
-                                                _searchResult = tiptedaviler!
-                                                    .where((tiptedaviler) =>
-                                                        tiptedaviler!.title!
-                                                            .toLowerCase()
-                                                            .contains(_searchText
-                                                                .toLowerCase()))
-                                                    .toList();
-                                              });
-                                            },
-                                          ),
-                                          SizedBox(height: 10),
-                                          Expanded(
-                                            child: ListView.builder(
-                                              shrinkWrap: true,
-                                              itemCount: _searchText.isEmpty
-                                                  ? tiptedaviler!.length
-                                                  : _searchResult.length,
-                                              itemBuilder: (context, index) {
-                                                final Treatments hasta =
-                                                    _searchText.isEmpty
-                                                        ? tiptedaviler![index]
-                                                        : _searchResult[index];
-
-                                                return ListTile(
-                                                  title: Text(hasta.title!),
-                                                  selected:
-                                                      secilentiptedaviler ==
-                                                          hasta,
-                                                  onTap: () {
-                                                    setState(() {
-                                                      secilentiptedaviler =
-                                                          hasta;
-                                                    });
-                                                    navigator!.pop();
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  } else {
-                                    return Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-                                });
-                          });
-                        });
-                  }),
-              const SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Lütfen diş seçiniz';
-                  }
-                  return null;
-                },
-                maxLines: 1,
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: solidColor),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  labelText: "Diş seçimi  ",
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 16,
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    disno = value.toString();
-                  });
-                },
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              TextButton(
-                onPressed: () {},
-                style: ButtonStyle(
-                  overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                    (Set<MaterialState> states) {
-                      if (states.contains(MaterialState.hovered)) {
-                        return Colors.transparent;
-                      } else {
-                        return null;
-                      }
-                    },
-                  ),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
+                    return null;
+                  },
+                  maxLines: 1,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: solidColor),
                       borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: solidColor),
+                    ),
+                    labelText: "Diş seçimi  ",
+                    labelStyle: context.textTheme.bodyLarge
+                        ?.copyWith(color: Colors.blue),
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: solidColor),
+                        borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 16,
                     ),
                   ),
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(secilentiptedaviler?.price ?? "Fiyat Boş"),
-                    Icon(Icons.arrow_drop_down),
-                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      disno = value.toString();
+                    });
+                  },
                 ),
               ),
               SizedBox(
                 height: 12,
               ),
-              DropdownButtonFormField<doktorgetmodel>(
-                value: secilendoktor,
-                items: doktors?.map((doktorgetmodel value) {
-                  return DropdownMenuItem<doktorgetmodel>(
-                    value: value,
-                    child: Text(value.name!),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: solidColor),
-                    borderRadius: BorderRadius.circular(10),
+              SizedBox(
+                height: 44,
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Lütfen tedavi ücreti giriniz';
+                    }
+                    return null;
+                  },
+                  maxLines: 1,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: solidColor),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    labelText: "Tedavi Ücreti",
+                    labelStyle: context.textTheme.bodyLarge
+                        ?.copyWith(color: Colors.blue),
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: solidColor),
+                        borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 16,
+                    ),
                   ),
-                  labelText: "Seçilen Doktor",
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 16,
-                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      money = value.toString();
+                    });
+                  },
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    secilendoktor = value;
-                  });
-                },
               ),
+              // TextButton(
+              //   onPressed: () {},
+              //   style: ButtonStyle(
+              //     overlayColor: MaterialStateProperty.resolveWith<Color?>(
+              //       (Set<MaterialState> states) {
+              //         if (states.contains(MaterialState.hovered)) {
+              //           return Colors.transparent;
+              //         } else {
+              //           return null;
+              //         }
+              //       },
+              //     ),
+              //     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              //       RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(10),
+              //         side: BorderSide(color: solidColor),
+              //       ),
+              //     ),
+              //     backgroundColor:
+              //         MaterialStateProperty.all<Color>(Colors.white),
+              //     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+              //       const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              //     ),
+              //   ),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       // Text(secilentiptedaviler?.price ?? "Fiyat Boş"),
+              //       Icon(Icons.arrow_drop_down),
+              //     ],
+              //   ),
+              // ),
+              SizedBox(
+                height: 12,
+              ),
+              _doctorWidget(context),
+              // DropdownButtonFormField<doktorgetmodel>(
+              //   value: secilendoktor,
+              //   items: doktors?.map((doktorgetmodel value) {
+              //     return DropdownMenuItem<doktorgetmodel>(
+              //       value: value,
+              //       child: Text(value.name!),
+              //     );
+              //   }).toList(),
+              //   decoration: InputDecoration(
+              //     focusedBorder: OutlineInputBorder(
+              //       borderSide: BorderSide(color: solidColor),
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     labelText: "Seçilen Doktor",
+              //     filled: true,
+              //     fillColor: Colors.white,
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     contentPadding: const EdgeInsets.symmetric(
+              //       vertical: 10,
+              //       horizontal: 16,
+              //     ),
+              //   ),
+              //   onChanged: (value) {
+              //     setState(() {
+              //       secilendoktor = value;
+              //     });
+              //   },
+              // ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: CustomButton(
@@ -456,9 +534,9 @@ class _TedaviEkleState extends State<TedaviEkle> {
                   onPressed: () {
                     tedaviekle(
                         Config.secilenhastaetayid,
-                        secilendoktor!.id,
-                        secilentipislem!.id,
-                        secilentiptedaviler!.id,
+                        secilendoktor,
+                        randevuType,
+                        secilentiptedaviler,
                         disno,
                         _selectedValue);
                   },
@@ -469,5 +547,259 @@ class _TedaviEkleState extends State<TedaviEkle> {
             ],
           ),
         ));
+  }
+
+  TextButton _doctorWidget(BuildContext context) {
+    return TextButton(
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.hovered)) {
+                return Colors.transparent;
+              } else {
+                return null;
+              }
+            },
+          ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: solidColor),
+            ),
+          ),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+            const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(doctorList),
+            Icon(Icons.arrow_drop_down),
+          ],
+        ),
+        onPressed: () {
+          DropDownState(
+            DropDown(
+              bottomSheetTitle: Text("Doktor Seçiniz",
+                  style: context.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600)),
+              submitButtonChild: const Text(
+                'Seç',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              data: _listOfDoctor,
+              selectedItems: (List<dynamic> selectedList) {
+                List<String> list = [];
+                for (var item in selectedList) {
+                  if (item is SelectedListItem) {
+                    setState(() {
+                      doctorList = item.name;
+                      secilendoktor = int.parse(item.value ?? "0");
+                    });
+                    list.add(item.name);
+                  }
+                }
+              },
+              enableMultipleSelection: false,
+            ),
+          ).showModal(context);
+        });
+  }
+
+  TextButton _tedaviWidget(BuildContext context) {
+    return TextButton(
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.hovered)) {
+                return Colors.transparent;
+              } else {
+                return null;
+              }
+            },
+          ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: solidColor),
+            ),
+          ),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+            const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(tedavi),
+            const Icon(Icons.arrow_drop_down),
+          ],
+        ),
+        onPressed: () {
+          DropDownState(
+            DropDown(
+              bottomSheetTitle: Text("Bir Tedavi Seçiniz",
+                  style: context.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600)),
+              submitButtonChild: const Text(
+                'Seç',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              data: _listOfTedavi,
+              selectedItems: (List<dynamic> selectedList) {
+                List<String> list = [];
+                for (var item in selectedList) {
+                  if (item is SelectedListItem) {
+                    setState(() {
+                      tedavi = item.name;
+                      secilentiptedaviler = int.parse(item.value.toString());
+                      // secilentipislem =
+                      //     int.parse(item.value.toString());
+                      //  _selectedRandevuDurumu = item.name;
+                    });
+                    list.add(item.name);
+                  }
+                }
+              },
+              enableMultipleSelection: false,
+            ),
+          ).showModal(context);
+        });
+  }
+
+  TextButton _islemWidget(BuildContext context) {
+    return TextButton(
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.hovered)) {
+                return Colors.transparent;
+              } else {
+                return null;
+              }
+            },
+          ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: solidColor),
+            ),
+          ),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+            const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(randevuType),
+            const Icon(Icons.arrow_drop_down),
+          ],
+        ),
+        onPressed: () {
+          DropDownState(
+            DropDown(
+              bottomSheetTitle: Text("Bir İşlem Seçiniz",
+                  style: context.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600)),
+              submitButtonChild: const Text(
+                'Seç',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              data: _listOfIslem,
+              selectedItems: (List<dynamic> selectedList) {
+                List<String> list = [];
+                for (var item in selectedList) {
+                  if (item is SelectedListItem) {
+                    setState(() {
+                      randevuType = item.name;
+                      // secilentipislem =
+                      //     int.parse(item.value.toString());
+                      //  _selectedRandevuDurumu = item.name;
+                    });
+                    list.add(item.name);
+                  }
+                }
+              },
+              enableMultipleSelection: false,
+            ),
+          ).showModal(context);
+        });
+  }
+
+  TextButton _tarifeWidget(BuildContext context) {
+    return TextButton(
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.hovered)) {
+                return Colors.transparent;
+              } else {
+                return null;
+              }
+            },
+          ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: solidColor),
+            ),
+          ),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+            const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(randevuPrice),
+            Icon(Icons.arrow_drop_down),
+          ],
+        ),
+        onPressed: () {
+          DropDownState(
+            DropDown(
+              bottomSheetTitle: Text("Randevu Durumu Seçiniz",
+                  style: context.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600)),
+              submitButtonChild: const Text(
+                'Seç',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              data: _listOfTarife,
+              selectedItems: (List<dynamic> selectedList) {
+                List<String> list = [];
+                for (var item in selectedList) {
+                  if (item is SelectedListItem) {
+                    setState(() {
+                      randevuPrice = item.name;
+                      secilentipislem = int.parse(item.value.toString());
+                      //  _selectedRandevuDurumu = item.name;
+                    });
+                    list.add(item.name);
+                  }
+                }
+              },
+              enableMultipleSelection: false,
+            ),
+          ).showModal(context);
+        });
   }
 }

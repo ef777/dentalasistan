@@ -7,6 +7,8 @@ import 'package:dental_asistanim/models/randevudurumlarmodel.dart';
 import 'package:dental_asistanim/models/randevudurumlarmodel.dart';
 import 'package:dental_asistanim/models/treatmantgrup.dart';
 import 'package:dental_asistanim/randevu/randevutarih.dart';
+import 'package:drop_down_list/drop_down_list.dart';
+import 'package:drop_down_list/model/selected_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dental_asistanim/models/hastamodel.dart';
@@ -21,10 +23,10 @@ class RandevuEkle extends StatefulWidget {
 }
 
 class _RandevuEkleState extends State<RandevuEkle> {
-  HastaModel? _selectedHasta;
-  randevugrupmodel? _selectedRandevuTuru;
+  int? _selectedHasta;
+  int? _selectedRandevuTuru;
 
-  doktorgetmodel? _selectedHekim;
+  int? _selectedHekim;
   String _selectedRandevuDurumu = "Seçiniz";
   String _randevuNotu = "";
   List secilitarih = [];
@@ -88,25 +90,26 @@ class _RandevuEkleState extends State<RandevuEkle> {
     var ikincisaatsaat = ikincisaat.hour.toString();
     var ikincisaatdakika = ikincisaat.minute.toString();
     print("ikinci saat ${ikincisaat}");
-    DateTime date = tarih[2];
+    var date = tarih[2];
+    print(date);
 
-    print("gün ${date}");
-    var gun = date.day.toString();
-    var yil = date.year.toString();
-    var ay = date.month.toString();
-    if (int.parse(ay) < 10) {
-      ay = "0${ay}";
-    }
-    print("gün ${gun}");
-    print("yıl ${yil}");
-    print("ay ${ay}");
+    // print("gün ${date}");
+    // var gun = date.day.toString();
+    // var yil = date.year.toString();
+    // var ay = date.month.toString();
+    // if (int.parse(ay) < 10) {
+    //   ay = "0${ay}";
+    // }
+    // print("gün ${gun}");
+    // print("yıl ${yil}");
+    // print("ay ${ay}");
 
     /*   var formatedgun = tarih[3];
     print("formatedgun ${formatedgun}"); */
     print("giden ilk date = ");
-    print("${yil}-${ay}-${gun} ${ilksaatsaat}:${ilksaatdakika}");
+    print("$date ${ilksaatsaat}:${ilksaatdakika}");
     print("giden ikinci date = ");
-    print("${yil}-${ay}-${gun} ${ikincisaatsaat}:${ikincisaatdakika}");
+    print("${date} ${ikincisaatsaat}:${ikincisaatdakika}");
     try {
       var url = Uri.parse('https://demo.dentalasistanim.com/api/appointments');
       var response = await http.post(url, headers: {
@@ -118,8 +121,8 @@ class _RandevuEkleState extends State<RandevuEkle> {
         "doctor_id": "${doktor.toString()}",
         "treatment_group_id": "${randevutur.toString()}",
         /*  "note": "${not.toString()}", */
-        "start_at": "${yil}-${ay}-${gun} ${ilksaatsaat}:${ilksaatdakika}",
-        "end_at": "${yil}-${ay}-${gun} ${ikincisaatsaat}:${ikincisaatdakika}",
+        "start_at": "${date} ${ilksaatsaat}:${ilksaatdakika}",
+        "end_at": "${date} ${ikincisaatsaat}:${ikincisaatdakika}",
       });
       String responseString = response.body;
       Map<String, dynamic> responseData = json.decode(responseString);
@@ -188,6 +191,9 @@ class _RandevuEkleState extends State<RandevuEkle> {
 
   @override
   void initState() {
+    for (var element in randevuDurumu) {
+      _listOfRandevuDurum.add(SelectedListItem(name: element));
+    }
     super.initState();
 
     setState(() {
@@ -198,18 +204,31 @@ class _RandevuEkleState extends State<RandevuEkle> {
       final hastaList = await hasta();
       setState(() {
         hastaListesi = hastaList;
+        for (var element in hastaListesi) {
+          _listOfHasta.add(SelectedListItem(
+              name: element.name, value: element.id.toString()));
+        }
       });
     });
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final randevu = await randevugrup();
       setState(() {
         randevuTurleri = randevu;
+        for (var e in randevuTurleri) {
+          _listOfRandevuType.add(
+              SelectedListItem(name: e.name ?? "", value: e.id.toString()));
+        }
       });
     });
+
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       final doktorlar = await doktor();
       setState(() {
         hekimler = doktorlar;
+        for (var e in hekimler) {
+          _listOfDoctor.add(
+              SelectedListItem(name: e.name ?? "", value: e.id.toString()));
+        }
       });
     });
 
@@ -218,45 +237,21 @@ class _RandevuEkleState extends State<RandevuEkle> {
     Future.delayed(const Duration(seconds: 1), () {});
   }
 
+  final List<SelectedListItem> _listOfRandevuType = [];
+  final List<SelectedListItem> _listOfDoctor = [];
+  final List<SelectedListItem> _listOfRandevuDurum = [];
+  final List<SelectedListItem> _listOfHasta = [];
+
+  String randevuType = "Randevu Türü Seçiniz";
+  String randevuDuruk = "Randevu Durumu Seçiniz ";
+  String hastaSec = "Hasta Seçiniz ";
+
+  String doctorList = "Doktor Seçiniz";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: sfColor,
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: CustomButton(
-            height: 48,
-            onPressed: () async {
-              print("secili tarih bu" + secilitarih.toString());
-              if (secilitarih.isEmpty) {
-                print("tarih boş");
-                secilitarih = await tarihSec();
-                print("işte seçilen tarihler");
-                print(secilitarih);
-              }
-              if (secilitarih.isNotEmpty) {
-                print("tarih dolu ve gönderiliyor istek");
-                var son = await randevuekle(
-                  _selectedHasta!.id,
-                  _selectedRandevuTuru!.id,
-                  _selectedHekim!.id,
-                  "not",
-                  _selectedRandevuDurumu,
-                  secilitarih,
-                );
-                if (son) {
-                  Get.snackbar('Tamam!', 'Randevu kaydedildi!');
-                  Navigator.pop(context);
-                } else {
-                  Get.snackbar('Hata!', 'Randevu kaydedilmedi!');
-                  print("hata ${son.toString()}");
-                  secilitarih.clear();
-                }
-              }
-            },
-            title: "Kaydet",
-          ),
-        ),
         appBar: AppBar(
           elevation: 0,
           title: Text(
@@ -274,7 +269,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
               padding: const EdgeInsets.only(left: 24, bottom: 8),
               child: Image.asset(
                 "assets/image2.png",
-                height: 100,
+                height: 200,
               ),
             ),
             Expanded(
@@ -301,210 +296,122 @@ class _RandevuEkleState extends State<RandevuEkle> {
                   child: ListView(
                     children: <Widget>[
                       const SizedBox(height: 10),
-                      TextButton(
-                          style: ButtonStyle(
-                            overlayColor:
-                                MaterialStateProperty.resolveWith<Color?>(
-                              (Set<MaterialState> states) {
-                                if (states.contains(MaterialState.hovered)) {
-                                  return Colors.transparent;
-                                } else {
-                                  return null;
-                                }
-                              },
-                            ),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                side: BorderSide(color: solidColor),
-                              ),
-                            ),
-                            backgroundColor:
-                                MaterialStateProperty.all<Color>(Colors.white),
-                            padding:
-                                MaterialStateProperty.all<EdgeInsetsGeometry>(
-                              const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 16),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(_selectedHasta?.name ?? "Hasta Seçiniz"),
-                              Icon(Icons.arrow_drop_down),
-                            ],
-                          ),
-                          onPressed: () {
-                            showModalBottomSheet(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return StatefulBuilder(builder:
-                                      (BuildContext context,
-                                          StateSetter setState) {
-                                    return Container(
-                                      padding: const EdgeInsets.all(16),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          TextField(
-                                            decoration: InputDecoration(
-                                              prefixIcon: Icon(Icons.search),
-                                              hintText: 'Hasta ismi...',
-                                            ),
-                                            onChanged: (text) {
-                                              print(
-                                                  'Search text: $_searchText');
-                                              print(
-                                                  'Search result: $_searchResult');
+                      _hastaWidget(context),
 
-                                              setState(() {
-                                                _searchText = text;
-                                                _searchResult = hastaListesi
-                                                    .where((hasta) => hasta.name
-                                                        .toLowerCase()
-                                                        .contains(_searchText
-                                                            .toLowerCase()))
-                                                    .toList();
-                                              });
-                                            },
-                                          ),
-                                          SizedBox(height: 10),
-                                          Expanded(
-                                            child: ListView.builder(
-                                              shrinkWrap: true,
-                                              itemCount: _searchText.isEmpty
-                                                  ? hastaListesi.length
-                                                  : _searchResult.length,
-                                              itemBuilder: (context, index) {
-                                                final HastaModel hasta =
-                                                    _searchText.isEmpty
-                                                        ? hastaListesi[index]
-                                                        : _searchResult[index];
+                      const SizedBox(height: 10),
+                      _randevuTypeWidget(context),
+                      const SizedBox(height: 10),
 
-                                                return ListTile(
-                                                  title: Text(hasta.name),
-                                                  selected:
-                                                      _selectedHasta == hasta,
-                                                  onTap: () {
-                                                    setState(() {
-                                                      _selectedHasta = hasta;
-                                                    });
-                                                    navigator!.pop();
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  });
-                                });
-                          }),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<randevugrupmodel>(
-                        value: _selectedRandevuTuru,
-                        items: randevuTurleri.map((randevugrupmodel value) {
-                          return DropdownMenuItem<randevugrupmodel>(
-                            value: value,
-                            child: Text(value.name!),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Randevu Türü Seçiniz",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedRandevuTuru = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<doktorgetmodel>(
-                        value: _selectedHekim,
-                        items: hekimler.map((doktorgetmodel value) {
-                          return DropdownMenuItem<doktorgetmodel>(
-                            value: value,
-                            child: Text(value.name!),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Doktor Seçiniz",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedHekim = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        value: _selectedRandevuDurumu.isEmpty
-                            ? null
-                            : _selectedRandevuDurumu,
-                        items: randevuDurumu.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.isEmpty ? null : value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: solidColor),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          labelText: "Randevu Durumu Seçiniz",
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              _selectedRandevuDurumu = value;
-                            } else {
-                              _selectedRandevuDurumu = "";
-                            }
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 16),
+                      // DropdownButtonFormField<randevugrupmodel>(
+                      //   value: _selectedRandevuTuru,
+                      //   items: randevuTurleri.map((randevugrupmodel value) {
+                      //     return DropdownMenuItem<randevugrupmodel>(
+                      //       value: value,
+                      //       child: Text(value.name!),
+                      //     );
+                      //   }).toList(),
+                      //   decoration: InputDecoration(
+                      //     focusedBorder: OutlineInputBorder(
+                      //       borderSide: BorderSide(color: solidColor),
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //     labelText: "Randevu Türü Seçiniz",
+                      //     filled: true,
+                      //     fillColor: Colors.white,
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //     contentPadding: const EdgeInsets.symmetric(
+                      //       vertical: 10,
+                      //       horizontal: 16,
+                      //     ),
+                      //   ),
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       _selectedRandevuTuru = value;
+                      //     });
+                      //   },
+                      // ),
+                      _doctorSelectedWidget(context),
+
+                      const SizedBox(height: 10),
+                      // DropdownButtonFormField<doktorgetmodel>(
+                      //   value: _selectedHekim,
+                      //   items: hekimler.map((doktorgetmodel value) {
+                      //     return DropdownMenuItem<doktorgetmodel>(
+                      //       value: value,
+                      //       child: Text(value.name!),
+                      //     );
+                      //   }).toList(),
+                      //   decoration: InputDecoration(
+                      //     focusedBorder: OutlineInputBorder(
+                      //       borderSide: BorderSide(color: solidColor),
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //     labelText: "Doktor Seçiniz",
+                      //     filled: true,
+                      //     fillColor: Colors.white,
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //     contentPadding: const EdgeInsets.symmetric(
+                      //       vertical: 10,
+                      //       horizontal: 16,
+                      //     ),
+                      //   ),
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       _selectedHekim = value;
+                      //     });
+                      //   },
+                      // ),
+                      _randevuDurumWidget(context),
+                      // const SizedBox(height: 16),
+                      // DropdownButtonFormField<String>(
+                      //   value: _selectedRandevuDurumu.isEmpty
+                      //       ? null
+                      //       : _selectedRandevuDurumu,
+                      //   items: randevuDurumu.map((String value) {
+                      //     return DropdownMenuItem<String>(
+                      //       value: value.isEmpty ? null : value,
+                      //       child: Text(value),
+                      //     );
+                      //   }).toList(),
+                      //   decoration: InputDecoration(
+                      //     focusedBorder: OutlineInputBorder(
+                      //       borderSide: BorderSide(color: solidColor),
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //     labelText: "Randevu Durumu Seçiniz",
+                      //     filled: true,
+                      //     fillColor: Colors.white,
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //     contentPadding: const EdgeInsets.symmetric(
+                      //       vertical: 10,
+                      //       horizontal: 16,
+                      //     ),
+                      //   ),
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       if (value != null) {
+                      //         _selectedRandevuDurumu = value;
+                      //       } else {
+                      //         _selectedRandevuDurumu = "";
+                      //       }
+                      //     });
+                      //   },
+                      // ),
+
+                      const SizedBox(height: 10),
                       TextFormField(
                         maxLines: 3,
                         decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: solidColor),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: solidColor),
                             borderRadius: BorderRadius.circular(10),
@@ -513,6 +420,7 @@ class _RandevuEkleState extends State<RandevuEkle> {
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
+                            borderSide: BorderSide(color: solidColor),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -526,7 +434,41 @@ class _RandevuEkleState extends State<RandevuEkle> {
                           });
                         },
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 32),
+                      CustomButton(
+                        height: 48,
+                        onPressed: () async {
+                          print("secili tarih bu" + secilitarih.toString());
+                          if (secilitarih.isEmpty) {
+                            print("tarih boş");
+                            secilitarih = await tarihSec();
+                            print("işte seçilen tarihler");
+                            print(secilitarih);
+                            print(secilitarih[1]);
+                            print(secilitarih[2]);
+                          }
+                          if (secilitarih.isNotEmpty) {
+                            print("tarih dolu ve gönderiliyor istek");
+                            var son = await randevuekle(
+                              _selectedHasta!,
+                              _selectedRandevuTuru!,
+                              _selectedHekim!,
+                              "not",
+                              _selectedRandevuDurumu,
+                              secilitarih,
+                            );
+                            if (son) {
+                              Get.snackbar('Tamam!', 'Randevu kaydedildi!');
+                              Navigator.pop(context);
+                            } else {
+                              Get.snackbar('Hata!', 'Randevu kaydedilmedi!');
+                              print("hata ${son.toString()}");
+                              secilitarih.clear();
+                            }
+                          }
+                        },
+                        title: "Kaydet",
+                      ),
                     ],
                   ),
                 ),
@@ -535,4 +477,345 @@ class _RandevuEkleState extends State<RandevuEkle> {
           ],
         ));
   }
+
+  TextButton _hastaWidget(BuildContext context) {
+    return TextButton(
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.hovered)) {
+                return Colors.transparent;
+              } else {
+                return null;
+              }
+            },
+          ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: solidColor),
+            ),
+          ),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+            const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(hastaSec),
+            Icon(Icons.arrow_drop_down),
+          ],
+        ),
+        onPressed: () {
+          DropDownState(
+            DropDown(
+              bottomSheetTitle: Text("Hasta Seçiniz",
+                  style: context.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600)),
+              submitButtonChild: const Text(
+                'Seç',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              data: _listOfHasta,
+              selectedItems: (List<dynamic> selectedList) {
+                List<String> list = [];
+                for (var item in selectedList) {
+                  if (item is SelectedListItem) {
+                    setState(() {
+                      hastaSec = item.name;
+                      _selectedHasta = int.parse(item.value ?? "0");
+                    });
+                    list.add(item.name);
+                  }
+                }
+              },
+              enableMultipleSelection: false,
+            ),
+          ).showModal(context);
+        });
+  }
+
+  TextButton _randevuDurumWidget(BuildContext context) {
+    return TextButton(
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.hovered)) {
+                return Colors.transparent;
+              } else {
+                return null;
+              }
+            },
+          ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: solidColor),
+            ),
+          ),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+            const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(randevuDuruk),
+            Icon(Icons.arrow_drop_down),
+          ],
+        ),
+        onPressed: () {
+          DropDownState(
+            DropDown(
+              bottomSheetTitle: Text("Randevu Durumu Seçiniz",
+                  style: context.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600)),
+              submitButtonChild: const Text(
+                'Seç',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              data: _listOfRandevuDurum,
+              selectedItems: (List<dynamic> selectedList) {
+                List<String> list = [];
+                for (var item in selectedList) {
+                  if (item is SelectedListItem) {
+                    setState(() {
+                      randevuDuruk = item.name;
+                      _selectedRandevuDurumu = item.name;
+                    });
+                    list.add(item.name);
+                  }
+                }
+              },
+              enableMultipleSelection: false,
+            ),
+          ).showModal(context);
+        });
+  }
+
+  TextButton _doctorSelectedWidget(BuildContext context) {
+    return TextButton(
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.hovered)) {
+                return Colors.transparent;
+              } else {
+                return null;
+              }
+            },
+          ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: solidColor),
+            ),
+          ),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+            const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(doctorList),
+            Icon(Icons.arrow_drop_down),
+          ],
+        ),
+        onPressed: () {
+          DropDownState(
+            DropDown(
+              bottomSheetTitle: Text("Doktor Seçiniz",
+                  style: context.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600)),
+              submitButtonChild: const Text(
+                'Seç',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              data: _listOfDoctor,
+              selectedItems: (List<dynamic> selectedList) {
+                List<String> list = [];
+                for (var item in selectedList) {
+                  if (item is SelectedListItem) {
+                    setState(() {
+                      doctorList = item.name;
+                      _selectedHekim = int.parse(item.value ?? "0");
+                    });
+                    list.add(item.name);
+                  }
+                }
+              },
+              enableMultipleSelection: false,
+            ),
+          ).showModal(context);
+        });
+  }
+
+  TextButton _randevuTypeWidget(BuildContext context) {
+    return TextButton(
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.hovered)) {
+                return Colors.transparent;
+              } else {
+                return null;
+              }
+            },
+          ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: solidColor),
+            ),
+          ),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+            const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(randevuType),
+            Icon(Icons.arrow_drop_down),
+          ],
+        ),
+        onPressed: () {
+          DropDownState(
+            DropDown(
+              bottomSheetTitle: Text("Randevu Türü Seçiniz",
+                  style: context.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600)),
+              submitButtonChild: const Text(
+                'Seç',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              data: _listOfRandevuType,
+              selectedItems: (List<dynamic> selectedList) {
+                List<String> list = [];
+                for (var item in selectedList) {
+                  if (item is SelectedListItem) {
+                    setState(() {
+                      randevuType = item.name;
+                      _selectedRandevuTuru = int.parse(item.value ?? "0");
+                    });
+                    list.add(item.name);
+                  }
+                }
+              },
+              enableMultipleSelection: false,
+            ),
+          ).showModal(context);
+        });
+  }
+
+  // TextButton _hastaSecWidget(BuildContext context) {
+  //   return TextButton(
+  //       style: ButtonStyle(
+  //         overlayColor: MaterialStateProperty.resolveWith<Color?>(
+  //           (Set<MaterialState> states) {
+  //             if (states.contains(MaterialState.hovered)) {
+  //               return Colors.transparent;
+  //             } else {
+  //               return null;
+  //             }
+  //           },
+  //         ),
+  //         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+  //           RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //             side: BorderSide(color: solidColor),
+  //           ),
+  //         ),
+  //         backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+  //         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+  //           const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+  //         ),
+  //       ),
+  //       child: Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //         children: [
+  //           Text(_selectedHasta?.name ?? "Hasta Seçiniz"),
+  //           Icon(Icons.arrow_drop_down),
+  //         ],
+  //       ),
+  //       onPressed: () {
+  //         showModalBottomSheet(
+  //             context: context,
+  //             builder: (BuildContext context) {
+  //               return StatefulBuilder(
+  //                   builder: (BuildContext context, StateSetter setState) {
+  //                 return Container(
+  //                   padding: const EdgeInsets.all(16),
+  //                   child: Column(
+  //                     mainAxisSize: MainAxisSize.min,
+  //                     children: [
+  //                       TextField(
+  //                         decoration: InputDecoration(
+  //                           prefixIcon: Icon(Icons.search),
+  //                           hintText: 'Hasta ismi...',
+  //                         ),
+  //                         onChanged: (text) {
+  //                           print('Search text: $_searchText');
+  //                           print('Search result: $_searchResult');
+
+  //                           setState(() {
+  //                             _searchText = text;
+  //                             _searchResult = hastaListesi
+  //                                 .where((hasta) => hasta.name
+  //                                     .toLowerCase()
+  //                                     .contains(_searchText.toLowerCase()))
+  //                                 .toList();
+  //                           });
+  //                         },
+  //                       ),
+  //                       SizedBox(height: 10),
+  //                       Expanded(
+  //                         child: ListView.builder(
+  //                           shrinkWrap: true,
+  //                           itemCount: _searchText.isEmpty
+  //                               ? hastaListesi.length
+  //                               : _searchResult.length,
+  //                           itemBuilder: (context, index) {
+  //                             final HastaModel hasta = _searchText.isEmpty
+  //                                 ? hastaListesi[index]
+  //                                 : _searchResult[index];
+
+  //                             return ListTile(
+  //                               title: Text(hasta.name),
+  //                               selected: _selectedHasta == hasta,
+  //                               onTap: () {
+  //                                 setState(() {
+  //                                   _selectedHasta = hasta;
+  //                                 });
+  //                                 navigator!.pop();
+  //                               },
+  //                             );
+  //                           },
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 );
+  //               });
+  //             });
+  //       });
+  // }
 }

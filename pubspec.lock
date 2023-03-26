@@ -89,6 +89,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
+  calendar_agenda:
+    dependency: "direct main"
+    description:
+      name: calendar_agenda
+      sha256: "7b6da3ef3d290adb1392467d00f0948ca899784e13160f2accc49b5ce6fe8d70"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2+3"
   characters:
     dependency: transitive
     description:
@@ -201,6 +209,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
+  drop_down_list:
+    dependency: "direct main"
+    description:
+      name: drop_down_list
+      sha256: c4f0529fca9516f35037d0b53737a647a79716040e994e121486102f3efcc1ab
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
   faded_widget:
     dependency: "direct main"
     description:
@@ -399,7 +415,7 @@ packages:
     source: hosted
     version: "0.1.10"
   flutter_localizations:
-    dependency: transitive
+    dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
@@ -461,6 +477,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.4.0"
+  font_awesome_flutter_named:
+    dependency: "direct main"
+    description:
+      name: font_awesome_flutter_named
+      sha256: ed0a376065c70d0ea538b6e19aa1a602f1ae033c6ac8e5961433f9e8b119fcff
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2+1"
   get:
     dependency: "direct main"
     description:
@@ -469,6 +493,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.6.5"
+  getwidget:
+    dependency: "direct main"
+    description:
+      name: getwidget
+      sha256: d97c08d2cc8f2456bb8b28e34931879b1c5da6545453f3d64b7bebd70b7abfcf
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   google_fonts:
     dependency: "direct main"
     description:
@@ -749,6 +781,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.1"
+  scrollable_positioned_list:
+    dependency: transitive
+    description:
+      name: scrollable_positioned_list
+      sha256: "9566352ab9ba05794ee6c8864f154afba5d36c5637d0e3e32c615ba4ceb92772"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -805,6 +845,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  simple_animations:
+    dependency: "direct main"
+    description:
+      name: simple_animations
+      sha256: "6da9a59389d7f6695391f702b0893a0fc63aed2b4d41509cfc1f8781218db635"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0+3"
   simple_gesture_detector:
     dependency: transitive
     description:
